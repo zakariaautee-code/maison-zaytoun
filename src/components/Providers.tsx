@@ -1,0 +1,37 @@
+"use client";
+
+import { useEffect, type ReactNode } from "react";
+import GlobalOverlays from "@/components/GlobalOverlays";
+import { I18nProvider } from "@/lib/i18n";
+import { useAdmin, useCart } from "@/lib/store";
+
+export default function Providers({ children }: { children: ReactNode }) {
+  useEffect(() => {
+    // Rehydrate persisted stores after mount to avoid SSR/client mismatches.
+    void useCart.persist.rehydrate();
+    void useAdmin.persist.rehydrate();
+
+    // Keep the customer menu in sync when the owner edits it in another tab.
+    const onStorage = (event: StorageEvent) => {
+      if (event.key === "mz-admin") void useAdmin.persist.rehydrate();
+      if (event.key === "mz-cart") void useCart.persist.rehydrate();
+    };
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, []);
+
+  return (
+    <>
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+      <link
+        href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Readex+Pro:wght@400;500;600;700&display=swap"
+        rel="stylesheet"
+      />
+      <I18nProvider>
+        {children}
+        <GlobalOverlays />
+      </I18nProvider>
+    </>
+  );
+}
