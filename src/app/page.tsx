@@ -13,6 +13,7 @@ import {
   StorySection,
 } from "@/components/EditorialSections";
 import RevealFooter from "@/components/RevealFooter";
+import RiadDoorIntro from "@/components/RiadDoorIntro";
 import ScrollCardStack from "@/components/ScrollCardStack";
 import SpecialBanner from "@/components/SpecialBanner";
 import TerroirOriginSection from "@/components/TerroirOriginSection";
@@ -37,6 +38,7 @@ export default function Home() {
         <BookingSection onReserve={openReserve} />
         <ExploreSection />
         <MenuPreviewBanner />
+        <RiadDoorIntro />
       </main>
       <RevealFooter />
     </>
