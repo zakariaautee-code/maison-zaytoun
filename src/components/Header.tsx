@@ -1,16 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { Leaf, ShoppingBag } from "lucide-react";
+import { Leaf } from "lucide-react";
 import LanguageSwitcher from "./LanguageSwitcher";
 import { CLIENT_CONFIG } from "@/config/client";
 import { useI18n } from "@/lib/i18n";
-import { useCartSummary, useUI } from "@/lib/store";
+import { useUI } from "@/lib/store";
 
 export default function Header() {
   const { t, locale } = useI18n();
-  const { count } = useCartSummary();
-  const openCart = useUI((s) => s.openCart);
   const openReserve = useUI((s) => s.openReserve);
 
   return (
@@ -42,12 +40,6 @@ export default function Header() {
 
         <div className="flex shrink-0 items-center gap-3">
           <LanguageSwitcher compact />
-          <button type="button" onClick={openCart} aria-label={t("common.cart")} className="flex items-center gap-2 text-plaster/60 transition-colors hover:text-brass-light">
-            <ShoppingBag className="size-[18px]" strokeWidth={1.5} />
-            {count > 0 && (
-              <span className="border border-brass/40 px-1.5 text-[11px] tabular-nums text-brass-light">{count}</span>
-            )}
-          </button>
           <button
             type="button"
             onClick={openReserve}

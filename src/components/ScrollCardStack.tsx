@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { DISH_BY_ID } from "@/lib/menu-data";
-import { getEffectivePrice, isAvailable, useAdmin, useCart } from "@/lib/store";
+import { getEffectivePrice, isAvailable, useAdmin } from "@/lib/store";
 import { useI18n } from "@/lib/i18n";
 import type { Dish } from "@/lib/types";
 
@@ -17,11 +17,14 @@ const SIGNATURES = SIGNATURE_IDS.map((id) => DISH_BY_ID[id]).filter(
   (dish): dish is Dish => Boolean(dish)
 );
 
-export default function ScrollCardStack() {
+export default function ScrollCardStack({
+  onOpenDish,
+}: {
+  onOpenDish?: (dish: Dish) => void;
+}) {
   const { t, locale, formatPrice } = useI18n();
   const priceOverrides = useAdmin((s) => s.priceOverrides);
   const availability = useAdmin((s) => s.availabilityOverrides);
-  const addItem = useCart((s) => s.addItem);
 
   return (
     <section className="bg-espresso py-20 text-plaster sm:py-28">
@@ -74,20 +77,14 @@ export default function ScrollCardStack() {
                 <div className="mt-4 flex items-center gap-4">
                   <button
                     type="button"
-                    disabled={!available}
-                    onClick={() =>
-                      available &&
-                      addItem(
-                        dish.id,
-                        { preference: "drawer.pref.normal", extras: [], notes: "" },
-                        1,
-                        price
-                      )
-                    }
-                    className="inline-flex items-center gap-2 bg-terracotta px-4 py-2.5 text-[12px] font-medium text-white transition-colors hover:bg-brass hover:text-espresso disabled:cursor-not-allowed disabled:opacity-40"
+                    onClick={() => onOpenDish?.(dish)}
+                    className="inline-flex items-center gap-2 border-b border-brass/50 pb-1 text-[12px] text-brass-light transition-colors hover:text-plaster"
                   >
-                    {t("stack.add")}
+                    {t("dish.view")}
                   </button>
+                  {!available && (
+                    <span className="text-[11px] text-plaster/45">{t("menu.soldOut")}</span>
+                  )}
                   <Link
                     href="/menu"
                     className="inline-flex items-center gap-1 text-[12px] text-brass-light transition-colors hover:text-plaster"

@@ -69,10 +69,6 @@ export default function MenuSection({ onOpenDish }: MenuSectionProps) {
             </p>
           </div>
 
-          <div className="flex shrink-0 items-center gap-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-ink-muted">
-            <span className="size-1.5 bg-saffron" />
-            {t("cart.zeroCommission")}
-          </div>
         </div>
       </div>
 

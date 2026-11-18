@@ -15,14 +15,8 @@ export const CLIENT_CONFIG = {
   instagramHandle: "@maisonzaytoun",
   openingHours: {
     week: "Lundi – Dimanche · 12h00 – 23h30",
-    note: "Service continu · Dernière commande à 23h00",
+    note: "Accueil continu jusqu'à 23h00",
   },
-  deliveryZones: [
-    { id: "maarif", name: "Maarif", fee: 15 },
-    { id: "anfa", name: "Anfa", fee: 20 },
-    { id: "gueliz", name: "Gueliz", fee: 15 },
-    { id: "hivernage", name: "Hivernage", fee: 20 },
-  ],
 } as const;
 
 export type ClientConfig = typeof CLIENT_CONFIG;

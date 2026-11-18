@@ -2,43 +2,34 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ShoppingBag } from "lucide-react";
+import { CalendarDays } from "lucide-react";
 import DishDrawer from "@/components/DishDrawer";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import MenuSection from "@/components/MenuSection";
 import SpecialBanner from "@/components/SpecialBanner";
-import TableServiceButton from "@/components/TableServiceModal";
+import { CLIENT_CONFIG } from "@/config/client";
 import { useI18n } from "@/lib/i18n";
 import { DISH_BY_ID } from "@/lib/menu-data";
-import { useCart, useCartSummary, useUI } from "@/lib/store";
+import { useUI } from "@/lib/store";
 import type { Dish } from "@/lib/types";
-import { CLIENT_CONFIG } from "@/config/client";
 
 export default function MenuPage() {
   const { t } = useI18n();
   const [selectedDish, setSelectedDish] = useState<Dish | null>(null);
-  const setTableNumber = useCart((s) => s.setTableNumber);
-  const setMode = useCart((s) => s.setMode);
-  const tableNumber = useCart((s) => s.tableNumber);
-  const { count } = useCartSummary();
-  const openCart = useUI((s) => s.openCart);
+  const [table, setTable] = useState("");
+  const openReserve = useUI((s) => s.openReserve);
 
   useEffect(() => {
-    void Promise.resolve(useCart.persist.rehydrate()).then(() => {
-      const params = new URLSearchParams(window.location.search);
-      const table = params.get("table");
-      if (table && /^\d+$/.test(table)) {
-        setTableNumber(table);
-        setMode("dine-in");
-      }
-      const dishId = params.get("dish");
-      if (dishId && DISH_BY_ID[dishId]) setSelectedDish(DISH_BY_ID[dishId]);
-    });
-  }, [setMode, setTableNumber]);
+    const params = new URLSearchParams(window.location.search);
+    const value = params.get("table");
+    if (value && /^\d+$/.test(value)) setTable(value);
+    const dishId = params.get("dish");
+    if (dishId && DISH_BY_ID[dishId]) setSelectedDish(DISH_BY_ID[dishId]);
+  }, []);
 
   return (
     <main className="relative z-10 min-h-screen bg-plaster">
-      <header className="fixed inset-x-0 top-0 z-50 px-3 pt-3 sm:px-5">
+      <header className="fixed inset-x-0 top-0 z-50">
         <div className="mx-auto flex h-[68px] max-w-[1400px] items-center justify-between gap-3 border-b border-brass/20 bg-espresso px-4 text-plaster sm:px-7">
           <div className="flex min-w-0 items-center gap-4">
             <Link
@@ -52,37 +43,41 @@ export default function MenuPage() {
               {t("menuPage.title")}
             </h1>
           </div>
-          <div className="flex shrink-0 items-center gap-1.5 sm:gap-3">
-            {tableNumber.trim() && (
-              <span className="hidden border border-brass/40 px-3 py-1.5 text-[10px] tracking-[0.14em] text-brass-light sm:inline">
-                {t("menuPage.table")} {tableNumber.trim()}
-              </span>
-            )}
-            <TableServiceButton />
+          <div className="flex shrink-0 items-center gap-3">
             <LanguageSwitcher compact />
             <button
               type="button"
-              onClick={openCart}
-              aria-label={t("common.cart")}
-              className="relative grid size-9 place-items-center text-plaster/70 transition-colors hover:text-brass-light"
+              onClick={openReserve}
+              className="bg-terracotta px-4 py-2.5 text-[11px] font-medium text-white transition-colors hover:bg-brass hover:text-espresso"
             >
-              <ShoppingBag className="size-[18px]" strokeWidth={1.5} />
-              {count > 0 && (
-                <span className="absolute -end-1 -top-1 grid min-w-[17px] place-items-center rounded-full bg-saffron px-1 text-[9px] font-bold text-white tabular-nums">
-                  {count}
-                </span>
-              )}
+              {t("nav.reserve")}
             </button>
           </div>
         </div>
       </header>
 
       <div className="pt-[80px]">
+        {table && (
+          <div className="border-b border-brass/20 bg-plaster-deep px-5 py-3 text-center text-[12px] text-ink">
+            {t("menuPage.table")} {table}
+          </div>
+        )}
         <SpecialBanner />
         <MenuSection onOpenDish={setSelectedDish} />
-        <div className="bg-espresso py-8 text-center text-[10px] tracking-[0.16em] text-plaster/40">
-          {CLIENT_CONFIG.restaurantName} · {CLIENT_CONFIG.city} · {t("cart.zeroCommission")}
+        <div className="bg-espresso py-10 text-center text-[12px] text-plaster/50">
+          {CLIENT_CONFIG.restaurantName} · {CLIENT_CONFIG.city}
         </div>
+      </div>
+
+      <div className="sticky bottom-0 z-30 border-t border-brass/30 bg-espresso p-3">
+        <button
+          type="button"
+          onClick={openReserve}
+          className="mx-auto flex w-full max-w-md items-center justify-center gap-2 bg-terracotta px-5 py-3.5 text-[12px] font-medium text-white transition-colors hover:bg-brass hover:text-espresso"
+        >
+          <CalendarDays className="size-4" strokeWidth={1.5} />
+          {t("hero.ctaReserve")}
+        </button>
       </div>
 
       <DishDrawer dish={selectedDish} onClose={() => setSelectedDish(null)} />

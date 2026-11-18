@@ -5,8 +5,9 @@ import { useEffect, useState } from "react";
 import Sheet from "./ui/Sheet";
 import { OCCASIONS, SEATING_OPTIONS, TIME_SLOTS } from "@/lib/constants";
 import { useI18n } from "@/lib/i18n";
+import { useUI } from "@/lib/store";
 import type { Reservation } from "@/lib/types";
-import { buildReservationMessage, orderWaUrl } from "@/lib/whatsapp";
+import { buildReservationMessage, reservationWaUrl } from "@/lib/whatsapp";
 
 type ReservationModalProps = { open: boolean; onClose: () => void };
 
@@ -17,6 +18,7 @@ const DINNER = TIME_SLOTS.filter((slot) => Number(slot.slice(0, 2)) >= 15);
 
 export default function ReservationModal({ open, onClose }: ReservationModalProps) {
   const { t, locale } = useI18n();
+  const showToast = useUI((s) => s.showToast);
   const [form, setForm] = useState<Reservation>({
     guests: 2,
     date: today(),
@@ -45,7 +47,8 @@ export default function ReservationModal({ open, onClose }: ReservationModalProp
       return;
     }
     const message = buildReservationMessage({ t, locale, reservation: form });
-    window.open(orderWaUrl(message), "_blank", "noopener,noreferrer");
+    window.open(reservationWaUrl(message), "_blank", "noopener,noreferrer");
+    showToast(t("reserve.note"));
   };
 
   return (

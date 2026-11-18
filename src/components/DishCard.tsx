@@ -1,9 +1,8 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Flame, Leaf, Plus, WheatOff } from "lucide-react";
+import { Flame, Leaf, WheatOff } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
-import { useCart } from "@/lib/store";
 import type { DietaryTag, Dish } from "@/lib/types";
 
 const TAG_STYLES: Record<
@@ -24,12 +23,6 @@ type DishCardProps = {
 
 export default function DishCard({ dish, price, available, onOpen }: DishCardProps) {
   const { t, locale, formatPrice } = useI18n();
-  const addItem = useCart((s) => s.addItem);
-
-  const quickAdd = () => {
-    if (!available) return;
-    addItem(dish.id, { preference: "drawer.pref.normal", extras: [], notes: "" }, 1, price);
-  };
 
   return (
     <motion.article
@@ -101,23 +94,12 @@ export default function DishCard({ dish, price, available, onOpen }: DishCardPro
           <button
             type="button"
             onClick={() => onOpen(dish)}
-            className="text-[9px] font-semibold uppercase tracking-[0.18em] text-ink-muted underline-offset-4 transition hover:text-saffron hover:underline"
+            className="inline-flex items-center gap-1 border-b border-brass/50 pb-1 text-[12px] text-ink transition-colors hover:text-terracotta"
           >
-            {t("menu.customize")}
+            {t("dish.view")}
           </button>
-
-          {available ? (
-            <button
-              type="button"
-              onClick={quickAdd}
-              aria-label={`${t("menu.add")} ${dish.name[locale]}`}
-              className="inline-flex items-center gap-1.5 border border-brass/50 px-3.5 py-2 text-[9px] font-bold uppercase tracking-[0.16em] text-espresso transition hover:border-brass hover:bg-brass active:translate-y-px"
-            >
-              <Plus className="size-3" strokeWidth={2.2} />
-              {t("menu.add")}
-            </button>
-          ) : (
-            <span className="border border-brass/25 px-3.5 py-2 text-[9px] font-bold uppercase tracking-[0.16em] text-ink-muted">
+          {!available && (
+            <span className="border border-brass/25 px-3 py-1.5 text-[11px] text-ink-muted">
               {t("menu.soldOut")}
             </span>
           )}

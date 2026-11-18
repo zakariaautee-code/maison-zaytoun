@@ -3,18 +3,16 @@
 import { useEffect, type ReactNode } from "react";
 import GlobalOverlays from "@/components/GlobalOverlays";
 import { I18nProvider } from "@/lib/i18n";
-import { useAdmin, useCart } from "@/lib/store";
+import { useAdmin } from "@/lib/store";
 
 export default function Providers({ children }: { children: ReactNode }) {
   useEffect(() => {
     // Rehydrate persisted stores after mount to avoid SSR/client mismatches.
-    void useCart.persist.rehydrate();
     void useAdmin.persist.rehydrate();
 
     // Keep the customer menu in sync when the owner edits it in another tab.
     const onStorage = (event: StorageEvent) => {
       if (event.key === "mz-admin") void useAdmin.persist.rehydrate();
-      if (event.key === "mz-cart") void useCart.persist.rehydrate();
     };
     window.addEventListener("storage", onStorage);
     return () => window.removeEventListener("storage", onStorage);

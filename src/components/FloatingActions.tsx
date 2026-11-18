@@ -8,12 +8,10 @@ import {
   WHATSAPP_NUMBER,
 } from "@/lib/constants";
 import { useI18n } from "@/lib/i18n";
-import { useCart } from "@/lib/store";
 import { buildWaUrl } from "@/lib/whatsapp";
 
 export default function FloatingActions() {
   const { t } = useI18n();
-  const count = useCart((s) => s.items.length);
 
   const actions = [
     {
@@ -31,7 +29,7 @@ export default function FloatingActions() {
     {
       label: t("float.whatsapp"),
       icon: MessageCircle,
-      href: buildWaUrl(WHATSAPP_NUMBER, `السلام عليكم — ${t("brand.name")}`),
+      href: buildWaUrl(WHATSAPP_NUMBER, `${t("reserve.receiptTitle")} — ${t("brand.name")}`),
       className: "border-saffron bg-saffron text-white hover:bg-saffron-dark",
     },
     {
@@ -43,11 +41,7 @@ export default function FloatingActions() {
   ];
 
   return (
-    <div
-      className={`fixed bottom-24 end-3 z-30 flex flex-col gap-2 transition-[bottom] duration-300 sm:end-6 ${
-        count > 0 ? "sm:bottom-24" : "sm:bottom-6"
-      }`}
-    >
+    <div className="fixed bottom-6 end-3 z-30 flex flex-col gap-2 sm:end-6">
       {actions.map((action) => {
         const Icon = action.icon;
         const primary = Icon === MessageCircle;

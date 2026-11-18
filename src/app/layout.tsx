@@ -5,7 +5,7 @@ import Providers from "@/components/Providers";
 export const metadata: Metadata = {
   title: "Maison Zaytoun — Luxury Moroccan Restaurant & Grill",
   description:
-    "L'art du feu, des épices et du partage. Menu digital trilingue, commande via WhatsApp sans commission et réservation. Maison Zaytoun, Casablanca & Marrakech.",
+    "L'art du feu, des épices et du partage. Carte digitale trilingue et réservation de table. Maison Zaytoun, Casablanca & Marrakech.",
   keywords: [
     "restaurant marocain",
     "Maison Zaytoun",

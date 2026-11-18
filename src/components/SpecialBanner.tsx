@@ -1,13 +1,12 @@
 "use client";
 
 import { ArrowUpRight } from "lucide-react";
-import { useI18n, type TranslationKey } from "@/lib/i18n";
-import { useAdmin, useCart, useUI } from "@/lib/store";
+import { useI18n } from "@/lib/i18n";
+import { useAdmin, useUI } from "@/lib/store";
 
 export default function SpecialBanner() {
   const special = useAdmin((s) => s.special);
-  const addItem = useCart((s) => s.addItem);
-  const openCart = useUI((s) => s.openCart);
+  const openReserve = useUI((s) => s.openReserve);
   const { t } = useI18n();
   if (!special.active) return null;
 
@@ -27,19 +26,7 @@ export default function SpecialBanner() {
         </div>
         <button
           type="button"
-          onClick={() => {
-            addItem(
-              "special",
-              {
-                preference: "drawer.pref.normal" as TranslationKey,
-                extras: [],
-                notes: special.title,
-              },
-              1,
-              special.price
-            );
-            openCart();
-          }}
+          onClick={openReserve}
           className="inline-flex items-center gap-2 border border-brass/60 px-4 py-2 text-[10px] font-bold tracking-[0.14em] transition-colors hover:bg-brass hover:text-espresso"
         >
           {t("special.cta")}

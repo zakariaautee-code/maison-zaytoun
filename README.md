@@ -1,12 +1,12 @@
 # Maison Zaytoun — Luxury Moroccan Restaurant & Grill
 
-An editorial Moroccan restaurant site with a complete zero-commission digital menu layered on top. **Design direction:** deep espresso (`#11100E`), Tadelakt plaster cream (`#F5EFE6`), saffron (`#C6532B`) and antique brass (`#B88A44`), with Cormorant Garamond / Amiri / Plus Jakarta Sans and a 3% plaster grain. Trilingual FR / AR / EN with full RTL, WhatsApp ordering and reservations, and a live owner demo panel — no backend, no hosting cost.
+An editorial Moroccan restaurant site with a view-only digital showcase menu and table reservations. **Design direction:** deep olive charcoal (`#121A15`), warm ivory (`#F4EBDD`), terracotta (`#C85A32`) and antique brass (`#C9A253`), with Cormorant Garamond / Amiri / Plus Jakarta Sans and a subtle plaster grain. Trilingual FR / AR / EN with full RTL, WhatsApp reservations, and a live owner demo panel — no backend, no hosting cost.
 
 ## Stack
 
 - **Next.js 15** (App Router) + **TypeScript** + **Tailwind CSS**
 - **Framer Motion** for section reveals, drawers and gallery transitions
-- **Zustand** (persisted to `localStorage`) for cart + owner demo edits
+- **Zustand** (persisted to `localStorage`) for owner demo edits and global UI state
 - **lucide-react** icons, **qrcode.react** for printable table QR codes
 - Client-side i18n context with typed keys and automatic `<html dir>` switching
 
@@ -63,10 +63,10 @@ Everything customer-facing lives in the three dictionaries in `src/lib/i18n.tsx`
 
 1. Scan a table QR code (or open `/admin` → download Table 1 → scan with your phone).
 2. Switch language to AR — the whole layout flips to RTL instantly.
-3. Open a dish, add extras, add to cart — fixed bottom cart bar appears.
+3. Open a dish — the view-only detail card shows the full photo, ingredients and allergens.
 4. Open `/admin` in another tab: sell out that dish and change its price. The customer menu updates live in both tabs.
-5. Checkout → a clean WhatsApp receipt with items, mode, zone fee and MAD total.
-6. Reserve a table → pre-filled request straight to the manager's WhatsApp.
+5. Reserve a table → pre-filled request straight to the manager's WhatsApp.
+6. Scan a table QR → the diner sees a subtle table greeting on the showcase menu.
 7. Tap the floating review and directions buttons.
 
 > Original copy and royalty-free imagery only — no maQam photos or wording were reused.

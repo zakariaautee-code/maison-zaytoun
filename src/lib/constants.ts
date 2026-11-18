@@ -1,5 +1,5 @@
 import { CLIENT_CONFIG } from "@/config/client";
-import type { DeliveryZone, SeatingPreference } from "./types";
+import type { SeatingPreference } from "./types";
 
 /** Demo phone number in international format (no +, no spaces). */
 export const WHATSAPP_NUMBER = CLIENT_CONFIG.whatsappNumber;
@@ -12,44 +12,9 @@ export const CONTACT_EMAIL = "reservation@maisonzaytoun.ma";
 
 /** Absolute origin used when generating QR codes. Override via env in production. */
 export const SITE_ORIGIN =
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://maison-zaytoun.pages.dev";
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://maison-zaytoun.vercel.app";
 
 export const TABLE_NUMBERS = Array.from({ length: 20 }, (_, i) => i + 1);
-
-const ZONE_AR: Record<string, string> = {
-  maarif: "المعارية",
-  anfa: "أنفا",
-  gueliz: "القيليز",
-  hivernage: "هيفرناج",
-};
-
-export const DELIVERY_ZONES: DeliveryZone[] = CLIENT_CONFIG.deliveryZones.map(
-  (zone) => ({
-    id: zone.id,
-    name: {
-      fr: zone.name,
-      ar: ZONE_AR[zone.id] ?? zone.name,
-      en: zone.name,
-    },
-    fee: zone.fee,
-  })
-);
-
-export const EXTRA_PRICE = 8;
-
-export const EXTRAS = [
-  { id: "olives", labelKey: "drawer.extra.olives" as const },
-  { id: "cheese", labelKey: "drawer.extra.cheese" as const },
-  { id: "sauce", labelKey: "drawer.extra.sauce" as const },
-];
-
-export const PREFERENCE_KEYS = [
-  "drawer.pref.normal",
-  "drawer.pref.spicy",
-  "drawer.pref.mild",
-] as const;
-
-export const PREFERENCES = PREFERENCE_KEYS.map((key) => ({ id: key, labelKey: key }));
 
 export const SEATING_OPTIONS: {
   id: SeatingPreference;

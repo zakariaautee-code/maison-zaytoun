@@ -29,30 +29,6 @@ export type Dish = {
   popular?: boolean;
 };
 
-export type ServiceMode = "dine-in" | "takeaway" | "delivery";
-
-export type DeliveryZone = {
-  id: string;
-  name: LocalizedText;
-  fee: number;
-};
-
-export type CartItem = {
-  key: string;
-  dishId: string;
-  quantity: number;
-  preference: string;
-  extras: string[];
-  notes: string;
-  unitPrice: number;
-};
-
-export type DishCustomization = {
-  preference: string;
-  extras: string[];
-  notes: string;
-};
-
 export type SeatingPreference =
   | "terrace"
   | "salle"

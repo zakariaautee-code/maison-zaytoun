@@ -4,7 +4,9 @@ import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowUpRight, Check } from "lucide-react";
 import { useI18n, type TranslationKey } from "@/lib/i18n";
-import { getEffectivePrice, useAdmin, useCart } from "@/lib/store";
+import { getEffectivePrice, useAdmin } from "@/lib/store";
+import { DISH_BY_ID } from "@/lib/menu-data";
+import type { Dish } from "@/lib/types";
 
 type Origin = {
   id: string;
@@ -55,10 +57,13 @@ const ORIGINS: Origin[] = [
   },
 ];
 
-export default function TerroirOriginSection() {
-  const { t, locale } = useI18n();
+export default function TerroirOriginSection({
+  onOpenDish,
+}: {
+  onOpenDish?: (dish: Dish) => void;
+}) {
+  const { t, locale, formatPrice } = useI18n();
   const [selected, setSelected] = useState(0);
-  const addItem = useCart((s) => s.addItem);
   const priceOverrides = useAdmin((s) => s.priceOverrides);
   const active = ORIGINS[selected];
   const price = getEffectivePrice(active.dishId, priceOverrides);
@@ -146,21 +151,20 @@ export default function TerroirOriginSection() {
               <p dir="ltr" className="mt-2 text-[11px] text-ink-soft/70">
                 {t(active.coords)}
               </p>
-              <button
-                type="button"
-                onClick={() =>
-                  addItem(
-                    active.dishId,
-                    { preference: "drawer.pref.normal", extras: [], notes: "" },
-                    1,
-                    price
-                  )
-                }
-                className="mt-6 inline-flex items-center gap-2 bg-terracotta px-5 py-3 text-[12px] font-medium text-white transition-colors hover:bg-ink"
-              >
-                {t("terroir.add")}
-                <ArrowUpRight className="size-4 transition-transform hover:translate-x-0.5 rtl:rotate-180" />
-              </button>
+              <div className="mt-6 flex flex-wrap items-center gap-4">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const dish = DISH_BY_ID[active.dishId];
+                    if (dish) onOpenDish?.(dish);
+                  }}
+                  className="inline-flex items-center gap-2 border-b border-brass/50 pb-1 text-[12px] text-ink transition-colors hover:text-terracotta"
+                >
+                  {t("dish.view")}
+                  <ArrowUpRight className="size-4 transition-transform hover:translate-x-0.5 rtl:rotate-180" />
+                </button>
+                <span className="font-display text-xl text-ink">{formatPrice(price)}</span>
+              </div>
             </div>
           </motion.div>
         </AnimatePresence>
