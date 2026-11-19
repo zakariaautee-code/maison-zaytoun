@@ -54,6 +54,16 @@ export default function AdminPanel() {
     link.click();
   };
 
+  const printCard = (target: "table" | "review") => {
+    document.body.dataset.print = target;
+    const cleanup = () => {
+      delete document.body.dataset.print;
+      window.removeEventListener("afterprint", cleanup);
+    };
+    window.addEventListener("afterprint", cleanup);
+    window.print();
+  };
+
   const downloadReviewQr = () => {
     const canvas = reviewQrRef.current?.querySelector("canvas");
     if (!canvas) return;
@@ -76,7 +86,7 @@ export default function AdminPanel() {
   const tips: TranslationKey[] = ["admin.tip1", "admin.tip2", "admin.tip3"];
 
   return (
-    <div className="relative min-h-screen bg-espresso pb-20 text-plaster">
+    <div className="relative min-h-screen bg-espresso pb-20 text-plaster print:min-h-0 print:bg-white">
       <div className="pointer-events-none fixed inset-0 bg-grain opacity-[0.03]" />
 
       {/* ── Top bar ──────────────────────────────────────────────────────── */}
@@ -302,7 +312,7 @@ export default function AdminPanel() {
 
           {/* ── QR generator ─────────────────────────────────────────────── */}
           <div className="space-y-6">
-            <section className="border border-brass/20 bg-coal/80 p-5 sm:p-6 print:border-0 print:bg-white print:p-0">
+            <section className="qr-page-break border border-brass/20 bg-coal/80 p-5 sm:p-6 print:border-0 print:bg-white print:p-0">
               <div className="print:hidden">
                 <h2 className="font-display text-2xl text-plaster">
                   {t("admin.qrTitle")}
@@ -315,14 +325,14 @@ export default function AdminPanel() {
               {/* Printable table card */}
               <div
                 ref={qrRef}
-                className="relative mx-auto mt-6 w-full max-w-[320px] bg-plaster p-3 text-espresso print:mt-0 print:max-w-[420px]"
+                className="qr-print-card qr-table-card relative mx-auto mt-6 w-full max-w-[320px] border border-brass/40 bg-plaster p-3 text-espresso print:mt-0"
               >
                 <span className="absolute start-0 top-0 size-8 border-s-2 border-t-2 border-brass-deep" />
                 <span className="absolute end-0 top-0 size-8 border-e-2 border-t-2 border-brass-deep" />
                 <span className="absolute bottom-0 start-0 size-8 border-b-2 border-s-2 border-brass-deep" />
                 <span className="absolute bottom-0 end-0 size-8 border-b-2 border-e-2 border-brass-deep" />
 
-                <div className="border border-ink/15 px-6 py-7 text-center print:border-black">
+                <div className="qr-inner border border-ink/15 px-6 py-7 text-center print:border-black">
                   <div className="flex items-center justify-center gap-2 text-brass-deep">
                     <Leaf className="size-4" strokeWidth={1.6} />
                     <span className="font-display text-lg italic">
@@ -410,11 +420,11 @@ export default function AdminPanel() {
                   </button>
                   <button
                     type="button"
-                    onClick={() => window.print()}
-                    className="inline-flex items-center justify-center gap-1.5 border border-brass/30 px-3 py-2.5 text-[9px] font-extrabold uppercase tracking-[0.12em] text-plaster/70 transition hover:border-brass hover:text-brass-light"
+                    onClick={() => printCard("table")}
+                    className="inline-flex items-center justify-center gap-1.5 border border-brass/30 px-3 py-2.5 text-[11px] text-plaster/70 transition hover:border-brass hover:text-brass-light"
                   >
                     <Printer className="size-3.5" />
-                    {t("admin.print")}
+                    {t("admin.printTable")}
                   </button>
                 </div>
 
@@ -445,13 +455,13 @@ export default function AdminPanel() {
 
               <div
                 ref={reviewQrRef}
-                className="relative mx-auto mt-6 w-full max-w-[320px] bg-plaster p-3 text-espresso print:mt-0 print:max-w-[420px]"
+                className="qr-print-card qr-review-card relative mx-auto mt-6 w-full max-w-[320px] border border-brass/40 bg-plaster p-3 text-espresso print:mt-0"
               >
                 <span className="absolute start-0 top-0 size-8 border-s-2 border-t-2 border-brass-deep" />
                 <span className="absolute end-0 top-0 size-8 border-e-2 border-t-2 border-brass-deep" />
                 <span className="absolute bottom-0 start-0 size-8 border-b-2 border-s-2 border-brass-deep" />
                 <span className="absolute bottom-0 end-0 size-8 border-b-2 border-e-2 border-brass-deep" />
-                <div className="border border-ink/15 px-6 py-7 text-center print:border-black">
+                <div className="qr-inner border border-ink/15 px-6 py-7 text-center print:border-black">
                   <div className="flex items-center justify-center gap-1.5 text-brass-deep">
                     {[1, 2, 3, 4, 5].map((n) => (
                       <Star key={n} className="size-4 fill-current" strokeWidth={1.4} />
@@ -480,7 +490,7 @@ export default function AdminPanel() {
                 </div>
               </div>
 
-              <div className="mt-5 grid grid-cols-2 gap-2 print:hidden">
+              <div className="mt-5 grid grid-cols-1 gap-2 sm:grid-cols-3 print:hidden">
                 <button
                   type="button"
                   onClick={downloadReviewQr}
@@ -488,6 +498,14 @@ export default function AdminPanel() {
                 >
                   <Download className="size-3.5" />
                   {t("admin.download")}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => printCard("review")}
+                  className="inline-flex items-center justify-center gap-1.5 border border-brass/30 px-3 py-2.5 text-[11px] text-plaster transition hover:border-brass"
+                >
+                  <Printer className="size-3.5" />
+                  {t("admin.printReview")}
                 </button>
                 <button
                   type="button"
