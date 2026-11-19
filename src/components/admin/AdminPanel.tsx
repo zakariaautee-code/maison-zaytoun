@@ -12,6 +12,8 @@ import {
   RotateCcw,
   ShieldCheck,
   Star,
+  Utensils,
+  Wine,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
@@ -20,6 +22,24 @@ import { SITE_ORIGIN, TABLE_NUMBERS } from "@/lib/constants";
 import { useI18n, type TranslationKey } from "@/lib/i18n";
 import { CATEGORIES, MENU } from "@/lib/menu-data";
 import { getEffectivePrice, isAvailable, useAdmin } from "@/lib/store";
+
+function CornerOrnament({ className }: { className: string }) {
+  return (
+    <svg
+      viewBox="0 0 40 40"
+      className={`pointer-events-none absolute size-8 text-brass-deep ${className}`}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1"
+      aria-hidden="true"
+    >
+      <path d="M2 15C2 7 7 2 15 2" />
+      <path d="M8 17C8 11 11 8 17 8" />
+      <path d="M4 22C8 20 12 20 16 22" />
+      <circle cx="19" cy="19" r="1.4" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
 
 export default function AdminPanel() {
   const { t, locale, formatPrice } = useI18n();
@@ -325,34 +345,32 @@ export default function AdminPanel() {
               {/* Printable table card */}
               <div
                 ref={qrRef}
-                className="qr-print-card qr-table-card relative mx-auto mt-6 w-full max-w-[320px] border border-brass/40 bg-plaster p-3 text-espresso print:mt-0"
+                className="qr-print-card qr-table-card relative mx-auto mt-6 w-full max-w-[320px] border border-brass-deep/70 bg-espresso p-3 text-plaster print:mt-0"
               >
-                <span className="absolute start-0 top-0 size-8 border-s-2 border-t-2 border-brass-deep" />
-                <span className="absolute end-0 top-0 size-8 border-e-2 border-t-2 border-brass-deep" />
-                <span className="absolute bottom-0 start-0 size-8 border-b-2 border-s-2 border-brass-deep" />
-                <span className="absolute bottom-0 end-0 size-8 border-b-2 border-e-2 border-brass-deep" />
+                <div className="qr-inner relative border border-brass-deep/50 px-6 py-8 text-center">
+                  <CornerOrnament className="start-0 top-0" />
+                  <CornerOrnament className="end-0 top-0 rotate-90" />
+                  <CornerOrnament className="bottom-0 start-0 -rotate-90" />
+                  <CornerOrnament className="bottom-0 end-0 rotate-180" />
 
-                <div className="qr-inner border border-ink/15 px-6 py-7 text-center print:border-black">
-                  <div className="flex items-center justify-center gap-2 text-brass-deep">
-                    <Leaf className="size-4" strokeWidth={1.6} />
-                    <span className="font-display text-lg italic">
+                  <div className="flex items-center justify-center gap-2 text-brass-light">
+                    <Leaf className="size-4" strokeWidth={1.5} />
+                    <span className="text-[9px] tracking-[0.28em]">
                       {CLIENT_CONFIG.restaurantName}
                     </span>
+                    <Leaf className="size-4 -scale-x-100" strokeWidth={1.5} />
                   </div>
-                  <p className="mt-1 text-[10px] tracking-[0.24em] text-espresso/45">
-                    {CLIENT_CONFIG.city} · {CLIENT_CONFIG.tagline}
+
+                  <p className="mt-3 font-display text-5xl italic leading-none text-brass-light">
+                    Menu
+                  </p>
+                  <div className="mx-auto mt-4 h-px w-20 bg-brass-deep/70" />
+
+                  <p className="mt-4 text-[11px] text-plaster/60">
+                    {t("admin.qrCardHint")}
                   </p>
 
-                  <div className="mx-auto mt-5 h-px w-16 bg-brass-deep/60" />
-
-                  <p className="mt-4 text-[10px] tracking-[0.28em] text-espresso/50">
-                    {t("admin.table")}
-                  </p>
-                  <p className="mt-1 font-display text-6xl leading-none tabular-nums text-espresso [font-variant-numeric:lining-nums_tabular-nums]">
-                    {String(table).padStart(2, "0")}
-                  </p>
-
-                  <div className="mx-auto mt-6 w-fit border border-brass-deep/40 bg-white p-3">
+                  <div className="mx-auto mt-5 w-fit border-2 border-brass-deep bg-white p-3">
                     <QRCodeCanvas
                       value={qrValue}
                       size={200}
@@ -363,16 +381,14 @@ export default function AdminPanel() {
                     />
                   </div>
 
-                  <p className="mt-5 font-display text-xl text-espresso">
-                    {t("admin.qrCardHint")}
-                  </p>
-                  <p className="mt-1 text-[10px] tracking-[0.14em] text-espresso/45">
-                    {t("cart.checkoutHint")}
-                  </p>
-                  <div className="mt-4 flex items-center justify-center gap-1.5 text-[10px] text-espresso/40">
-                    <Star className="size-3 fill-brass-deep text-brass-deep" />
-                    {t("footer.reviewLine")}
+                  <div className="mt-5 flex items-center justify-center gap-3 text-brass-light">
+                    <Utensils className="size-4" strokeWidth={1.4} />
+                    <span className="size-1 bg-brass-deep" />
+                    <Wine className="size-4" strokeWidth={1.4} />
                   </div>
+                  <p className="mt-3 text-[10px] tracking-[0.22em] text-plaster/50">
+                    {t("admin.table")} {String(table).padStart(2, "0")} · {CLIENT_CONFIG.city}
+                  </p>
                 </div>
               </div>
 
@@ -455,26 +471,27 @@ export default function AdminPanel() {
 
               <div
                 ref={reviewQrRef}
-                className="qr-print-card qr-review-card relative mx-auto mt-6 w-full max-w-[320px] border border-brass/40 bg-plaster p-3 text-espresso print:mt-0"
+                className="qr-print-card qr-review-card relative mx-auto mt-6 w-full max-w-[320px] border-2 border-brass-deep/70 bg-plaster p-3 text-espresso print:mt-0"
               >
-                <span className="absolute start-0 top-0 size-8 border-s-2 border-t-2 border-brass-deep" />
-                <span className="absolute end-0 top-0 size-8 border-e-2 border-t-2 border-brass-deep" />
-                <span className="absolute bottom-0 start-0 size-8 border-b-2 border-s-2 border-brass-deep" />
-                <span className="absolute bottom-0 end-0 size-8 border-b-2 border-e-2 border-brass-deep" />
-                <div className="qr-inner border border-ink/15 px-6 py-7 text-center print:border-black">
+                <div className="qr-inner relative border border-brass-deep/40 px-6 py-8 text-center">
+                  <CornerOrnament className="start-0 top-0" />
+                  <CornerOrnament className="end-0 top-0 rotate-90" />
+                  <CornerOrnament className="bottom-0 start-0 -rotate-90" />
+                  <CornerOrnament className="bottom-0 end-0 rotate-180" />
+
                   <div className="flex items-center justify-center gap-1.5 text-brass-deep">
                     {[1, 2, 3, 4, 5].map((n) => (
                       <Star key={n} className="size-4 fill-current" strokeWidth={1.4} />
                     ))}
                   </div>
-                  <p className="mt-4 font-display text-3xl leading-tight text-espresso">
+                  <p className="mt-3 font-display text-4xl italic leading-tight text-espresso">
                     {t("admin.reviewQrCta")}
                   </p>
-                  <p className="mt-2 text-[11px] tracking-[0.14em] text-espresso/50">
+                  <p className="mt-2 text-[10px] tracking-[0.2em] text-espresso/50">
                     {CLIENT_CONFIG.restaurantName}
                   </p>
-                  <div className="mx-auto mt-5 h-px w-16 bg-brass-deep/60" />
-                  <div className="mx-auto mt-5 w-fit border border-brass-deep/40 bg-white p-3">
+                  <div className="mx-auto mt-4 h-px w-20 bg-brass-deep/60" />
+                  <div className="mx-auto mt-5 w-fit border-2 border-brass-deep bg-white p-3">
                     <QRCodeCanvas
                       value={reviewQrValue}
                       size={200}
@@ -484,7 +501,10 @@ export default function AdminPanel() {
                       className="size-[168px] print:size-[200px]"
                     />
                   </div>
-                  <p className="mt-5 text-[10px] tracking-[0.14em] text-espresso/45">
+                  <p className="mt-5 text-[11px] text-espresso/60">
+                    {t("admin.reviewQrHint")}
+                  </p>
+                  <p className="mt-1 text-[10px] tracking-[0.14em] text-espresso/40">
                     {t("footer.reviewCount")}
                   </p>
                 </div>
