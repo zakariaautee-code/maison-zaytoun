@@ -3,9 +3,17 @@
 import { useEffect, type ReactNode } from "react";
 import GlobalOverlays from "@/components/GlobalOverlays";
 import { I18nProvider } from "@/lib/i18n";
+import { DishesContext } from "@/lib/dishes-context";
 import { useAdmin } from "@/lib/store";
+import type { Dish } from "@/lib/types";
 
-export default function Providers({ children }: { children: ReactNode }) {
+export default function Providers({
+  children,
+  dishes,
+}: {
+  children: ReactNode;
+  dishes: Dish[];
+}) {
   useEffect(() => {
     // Rehydrate persisted stores after mount to avoid SSR/client mismatches.
     void useAdmin.persist.rehydrate();
@@ -27,8 +35,10 @@ export default function Providers({ children }: { children: ReactNode }) {
         rel="stylesheet"
       />
       <I18nProvider>
-        {children}
-        <GlobalOverlays />
+        <DishesContext.Provider value={dishes}>
+          {children}
+          <GlobalOverlays />
+        </DishesContext.Provider>
       </I18nProvider>
     </>
   );

@@ -3,6 +3,7 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { DISH_BY_ID } from "./menu-data";
+import type { Dish } from "./types";
 
 // ── Admin (owner demo) store ─────────────────────────────────────────────────
 export type SpecialMode = {
@@ -67,6 +68,19 @@ export function isAvailable(
   overrides: Record<string, boolean>
 ): boolean {
   return overrides[dishId] ?? DISH_BY_ID[dishId]?.available ?? true;
+}
+
+/** Price with owner pitch overrides, falling back to the live dish value. */
+export function priceFor(dish: Dish, overrides: Record<string, number>): number {
+  return overrides[dish.id] ?? dish.price;
+}
+
+/** Availability with owner pitch overrides, falling back to the live dish value. */
+export function availableFor(
+  dish: Dish,
+  overrides: Record<string, boolean>
+): boolean {
+  return overrides[dish.id] ?? dish.available;
 }
 
 // ── Global UI state shared across every route ─────────────────────────────────

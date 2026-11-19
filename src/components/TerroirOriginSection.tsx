@@ -4,8 +4,8 @@ import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowUpRight, Check } from "lucide-react";
 import { useI18n, type TranslationKey } from "@/lib/i18n";
-import { getEffectivePrice, useAdmin } from "@/lib/store";
-import { DISH_BY_ID } from "@/lib/menu-data";
+import { priceFor, useAdmin } from "@/lib/store";
+import { useDishes } from "@/lib/dishes-context";
 import type { Dish } from "@/lib/types";
 
 type Origin = {
@@ -63,10 +63,12 @@ export default function TerroirOriginSection({
   onOpenDish?: (dish: Dish) => void;
 }) {
   const { t, locale, formatPrice } = useI18n();
+  const allDishes = useDishes();
   const [selected, setSelected] = useState(0);
   const priceOverrides = useAdmin((s) => s.priceOverrides);
   const active = ORIGINS[selected];
-  const price = getEffectivePrice(active.dishId, priceOverrides);
+  const activeDish = allDishes.find((dish) => dish.id === active.dishId);
+  const price = activeDish ? priceFor(activeDish, priceOverrides) : 0;
 
   return (
     <section id="terroir" className="scroll-mt-24 bg-plaster py-20 text-ink sm:py-28">
@@ -155,7 +157,7 @@ export default function TerroirOriginSection({
                 <button
                   type="button"
                   onClick={() => {
-                    const dish = DISH_BY_ID[active.dishId];
+                    const dish = allDishes.find((item) => item.id === active.dishId);
                     if (dish) onOpenDish?.(dish);
                   }}
                   className="inline-flex items-center gap-2 border-b border-brass/50 pb-1 text-[12px] text-ink transition-colors hover:text-terracotta"

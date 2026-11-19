@@ -4,8 +4,9 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Flame, Leaf, Search, WheatOff, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import DishCard from "./DishCard";
-import { CATEGORIES, MENU } from "@/lib/menu-data";
-import { getEffectivePrice, isAvailable, useAdmin } from "@/lib/store";
+import { CATEGORIES } from "@/lib/menu-data";
+import { availableFor, priceFor, useAdmin } from "@/lib/store";
+import { useDishes } from "@/lib/dishes-context";
 import { useI18n } from "@/lib/i18n";
 import type { CategoryId, DietaryTag, Dish } from "@/lib/types";
 
@@ -23,6 +24,7 @@ type MenuSectionProps = { onOpenDish: (dish: Dish) => void };
 
 export default function MenuSection({ onOpenDish }: MenuSectionProps) {
   const { t, locale } = useI18n();
+  const allDishes = useDishes();
   const [category, setCategory] = useState<CategoryId | "all">("all");
   const [query, setQuery] = useState("");
   const [filters, setFilters] = useState<DietaryTag[]>([]);
@@ -36,7 +38,7 @@ export default function MenuSection({ onOpenDish }: MenuSectionProps) {
 
   const dishes = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return MENU.filter((dish) => {
+    return allDishes.filter((dish) => {
       if (category !== "all" && dish.category !== category) return false;
       if (filters.length && !filters.every((f) => dish.tags.includes(f))) return false;
       if (!q) return true;
@@ -47,7 +49,7 @@ export default function MenuSection({ onOpenDish }: MenuSectionProps) {
         dish.description[locale].toLowerCase().includes(q)
       );
     });
-  }, [category, query, filters, locale]);
+  }, [allDishes, category, query, filters, locale]);
 
   const tabs: { id: CategoryId | "all"; label: string }[] = [
     { id: "all", label: t("menu.all") },
@@ -174,8 +176,8 @@ export default function MenuSection({ onOpenDish }: MenuSectionProps) {
                 <DishCard
                   key={dish.id}
                   dish={dish}
-                  price={getEffectivePrice(dish.id, priceOverrides)}
-                  available={isAvailable(dish.id, availabilityOverrides)}
+                  price={priceFor(dish, priceOverrides)}
+                  available={availableFor(dish, availabilityOverrides)}
                   onOpen={onOpenDish}
                 />
               ))}

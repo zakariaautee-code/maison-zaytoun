@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import Providers from "@/components/Providers";
+import { getDishes } from "@/lib/sanity";
 
 export const metadata: Metadata = {
   title: "Maison Zaytoun — Luxury Moroccan Restaurant & Grill",
@@ -26,13 +27,14 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const dishes = await getDishes();
   return (
     <html lang="fr" dir="ltr" suppressHydrationWarning>
       <body className="min-h-screen bg-plaster text-espresso antialiased">
-        <Providers>{children}</Providers>
+        <Providers dishes={dishes}>{children}</Providers>
       </body>
     </html>
   );

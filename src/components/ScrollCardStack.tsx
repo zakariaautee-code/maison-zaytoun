@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
-import { DISH_BY_ID } from "@/lib/menu-data";
-import { getEffectivePrice, isAvailable, useAdmin } from "@/lib/store";
+import { useDishes } from "@/lib/dishes-context";
+import { availableFor, priceFor, useAdmin } from "@/lib/store";
 import { useI18n } from "@/lib/i18n";
 import type { Dish } from "@/lib/types";
 
@@ -13,16 +13,16 @@ const SIGNATURE_IDS = [
   "brochette-lamb",
   "cornes-gazelle",
 ];
-const SIGNATURES = SIGNATURE_IDS.map((id) => DISH_BY_ID[id]).filter(
-  (dish): dish is Dish => Boolean(dish)
-);
-
 export default function ScrollCardStack({
   onOpenDish,
 }: {
   onOpenDish?: (dish: Dish) => void;
 }) {
   const { t, locale, formatPrice } = useI18n();
+  const allDishes = useDishes();
+  const signatures = SIGNATURE_IDS.map((id) =>
+    allDishes.find((dish) => dish.id === id)
+  ).filter((dish): dish is Dish => Boolean(dish));
   const priceOverrides = useAdmin((s) => s.priceOverrides);
   const availability = useAdmin((s) => s.availabilityOverrides);
 
@@ -47,9 +47,9 @@ export default function ScrollCardStack({
         </p>
 
         <div className="mt-12 grid gap-x-8 gap-y-12 sm:grid-cols-2">
-          {SIGNATURES.map((dish, index) => {
-            const price = getEffectivePrice(dish.id, priceOverrides);
-            const available = isAvailable(dish.id, availability);
+          {signatures.map((dish, index) => {
+            const price = priceFor(dish, priceOverrides);
+            const available = availableFor(dish, availability);
             return (
               <article key={dish.id}>
                 <div className="relative aspect-[4/3] overflow-hidden border border-brass/20 bg-coal">

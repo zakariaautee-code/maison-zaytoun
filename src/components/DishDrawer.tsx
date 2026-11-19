@@ -4,7 +4,7 @@ import { useState } from "react";
 import { CalendarDays, Share2, Star } from "lucide-react";
 import Sheet from "./ui/Sheet";
 import DishShareModal from "./DishShareModal";
-import { getEffectivePrice, isAvailable, useAdmin, useUI } from "@/lib/store";
+import { availableFor, priceFor, useAdmin, useUI } from "@/lib/store";
 import { useI18n } from "@/lib/i18n";
 import type { Dish } from "@/lib/types";
 
@@ -22,8 +22,8 @@ export default function DishDrawer({ dish, onClose }: DishDrawerProps) {
 
   if (!dish) return null;
 
-  const price = getEffectivePrice(dish.id, priceOverrides);
-  const available = isAvailable(dish.id, availabilityOverrides);
+  const price = priceFor(dish, priceOverrides);
+  const available = availableFor(dish, availabilityOverrides);
 
   return (
     <>

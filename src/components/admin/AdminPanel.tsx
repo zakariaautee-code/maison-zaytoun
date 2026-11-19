@@ -113,14 +113,22 @@ export default function AdminPanel() {
             </p>
           </div>
 
-          <button
-            type="button"
-            onClick={reset}
-            className="inline-flex w-fit items-center gap-2 whitespace-nowrap border border-brass/30 px-4 py-2.5 text-[9px] font-semibold uppercase tracking-[0.14em] text-plaster/60 transition hover:border-saffron hover:text-saffron"
-          >
-            <RotateCcw className="size-3.5" />
-            {t("admin.reset")}
-          </button>
+          <div className="flex flex-wrap gap-3">
+            <Link
+              href="/studio"
+              className="inline-flex w-fit items-center gap-2 whitespace-nowrap bg-brass px-4 py-2.5 text-[11px] font-medium text-espresso transition hover:bg-brass-light"
+            >
+              {t("admin.openStudio")}
+            </Link>
+            <button
+              type="button"
+              onClick={reset}
+              className="inline-flex w-fit items-center gap-2 whitespace-nowrap border border-brass/30 px-4 py-2.5 text-[11px] text-plaster/60 transition hover:border-saffron hover:text-saffron"
+            >
+              <RotateCcw className="size-3.5" />
+              {t("admin.reset")}
+            </button>
+          </div>
         </div>
 
         {/* ── Special mode ─────────────────────────────────────────────────── */}
