@@ -59,7 +59,7 @@ function cardSvg(
       return `
         <text x="${nameX}" y="${y}" text-anchor="${nameAnchor}" font-family="Cormorant Garamond, Georgia, serif" font-size="36" fill="#F4EBDD">${esc(dish.name[locale])}</text>
         <text x="${priceX}" y="${y}" text-anchor="${priceAnchor}" font-family="Cormorant Garamond, Georgia, serif" font-size="30" fill="#C9A253">${dish.price} MAD</text>
-        <text x="${nameX}" y="${y + 30}" text-anchor="${nameAnchor}" font-family="Plus Jakarta Sans, sans-serif" font-size="15" fill="#9AAE9F">${esc(short(dish.description[locale], 62))}</text>
+        <text x="${nameX}" y="${y + 34}" text-anchor="${nameAnchor}" font-family="Plus Jakarta Sans, sans-serif" font-size="20" fill="#B9C7B8">${esc(short(dish.description[locale], 58))}</text>
         <line x1="${listLeft}" y1="${y + 58}" x2="${listRight}" y2="${y + 58}" stroke="#C9A253" stroke-opacity="0.28" stroke-width="1" />`;
     })
     .join("");
@@ -182,22 +182,39 @@ export default function MenuCardPrinter() {
     image.src = objectUrl;
   };
 
-  const printAll = () => {
-    const pages = categories
-      .map((c) => {
+  const printAll = async () => {
+    const cache = new Map<string, string>();
+    const pages = await Promise.all(
+      categories.map(async (c) => {
         const list = allDishes
           .filter((dish) => dish.category === c.id && dish.available)
           .map((dish) => ({ ...dish, price: priceFor(dish, priceOverrides) }));
-        return `<div class="page">${cardSvg(list, c.label, locale)}</div>`;
+        const photos = await Promise.all(
+          list.slice(0, 3).map(async (dish) => {
+            if (!cache.has(dish.image)) cache.set(dish.image, await imageToDataUrl(dish.image));
+            return cache.get(dish.image)!;
+          })
+        );
+        return `<div class="page">${cardSvg(list, c.label, locale, photos)}</div>`;
       })
-      .join("");
+    );
     const win = window.open("", "_blank");
     if (!win) return;
     win.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>Maison Zaytoun — Cartes menu</title>
       <style>@page{size:A5 portrait;margin:0}html,body{margin:0;padding:0;background:#fff}.page{width:148mm;height:210mm;overflow:hidden;break-after:page;page-break-after:always}.page svg{width:148mm;height:210mm;display:block}</style>
-      </head><body>${pages}</body></html>`);
+      </head><body>${pages.join("")}</body></html>`);
     win.document.close();
     win.focus();
+    await Promise.all(
+      Array.from(win.document.images).map((image) =>
+        image.complete
+          ? Promise.resolve()
+          : new Promise<void>((resolve) => {
+              image.onload = () => resolve();
+              image.onerror = () => resolve();
+            })
+      )
+    );
     win.print();
   };
 
@@ -252,7 +269,7 @@ export default function MenuCardPrinter() {
         </button>
         <button
           type="button"
-          onClick={printAll}
+          onClick={() => void printAll()}
           className="inline-flex items-center gap-2 border border-brass/40 px-4 py-2.5 text-[11px] text-plaster transition hover:border-brass"
         >
           <Printer className="size-4" />
@@ -261,7 +278,7 @@ export default function MenuCardPrinter() {
       </div>
 
       <div
-        className="mx-auto mt-6 w-full max-w-[340px] border border-brass/30 bg-white"
+        className="menu-card-preview mx-auto mt-6 w-full max-w-[300px] border border-brass/30 bg-white"
         dangerouslySetInnerHTML={{ __html: svg }}
       />
     </section>

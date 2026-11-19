@@ -118,6 +118,7 @@ body {
 
 input, select, textarea, button { font: inherit; }
 button { border-radius: 4px; }
+.menu-card-preview svg { width: 100% !important; height: auto !important; display: block; }
 input[type="date"]::-webkit-calendar-picker-indicator { cursor: pointer; opacity: 0.6; }
 
 /* Unslop pass: quiet labels and one weight, including arbitrary Tailwind values. */
