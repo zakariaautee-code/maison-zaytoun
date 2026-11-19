@@ -272,14 +272,14 @@ export default function MenuCardPrinter() {
       </div>
 
       <div className="mt-5 flex flex-wrap items-center gap-3">
-        <label htmlFor="menu-card-category" className="text-[11px] text-plaster/50">
+        <label htmlFor="menu-card-category" className="text-[11px] text-[#E6CFA0]/70">
           {t("admin.cardCategory")}
         </label>
         <select
           id="menu-card-category"
           value={category}
           onChange={(e) => setCategory(e.target.value as CategoryId)}
-          className="field max-w-xs [color-scheme:dark]"
+          className="field-heritage max-w-xs"
         >
           {categories.map((c) => (
             <option key={c.id} value={c.id}>

@@ -68,6 +68,27 @@ body {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='72' viewBox='0 0 72 72'%3E%3Cg fill='none' stroke='%23C9A870' stroke-opacity='0.16' stroke-width='1'%3E%3Cpath d='M36 2 70 36 36 70 2 36Z'/%3E%3Cpath d='M36 14 58 36 36 58 14 36Z'/%3E%3Ccircle cx='36' cy='36' r='8'/%3E%3Cpath d='M36 0v14M36 58v14M0 36h14M58 36h14'/%3E%3C/g%3E%3C/svg%3E");
   }
 
+  /* Heritage select: gold border, warm cream text, aubergine dropdown. */
+  .field-heritage {
+    width: 100%;
+    background-color: #3E2725;
+    border: 1px solid rgba(201, 168, 112, 0.55);
+    padding: 0.75rem 0.75rem;
+    font-size: 0.9375rem;
+    color: #F7F2E9;
+    transition: border-color 180ms ease, background-color 180ms ease;
+  }
+  .field-heritage::placeholder { color: rgba(247, 242, 233, 0.45); }
+  .field-heritage:focus {
+    outline: none;
+    border-color: #C9A870;
+    background-color: #5A3A38;
+  }
+  .field-heritage option {
+    background-color: #3E2725;
+    color: #F7F2E9;
+  }
+
   /* Scoped type stack for the heritage riad menu surfaces. */
   .heritage {
     --font-display: "Forum", "Cormorant Garamond", Georgia, serif;
