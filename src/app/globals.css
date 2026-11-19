@@ -62,6 +62,22 @@ body {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Cg fill='none' stroke='%23C9A253' stroke-opacity='0.13' stroke-width='1'%3E%3Cpath d='M32 4 60 32 32 60 4 32Z'/%3E%3Cpath d='M32 14 50 32 32 50 14 32Z'/%3E%3Ccircle cx='32' cy='32' r='7'/%3E%3Cpath d='M32 0v14M32 50v14M0 32h14M50 32h14'/%3E%3C/g%3E%3C/svg%3E");
   }
 
+  /* Heritage riad: aubergine ground with a quiet zellige star lattice. */
+  .pattern-riad {
+    background-color: #5A3A38;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='72' viewBox='0 0 72 72'%3E%3Cg fill='none' stroke='%23C9A870' stroke-opacity='0.16' stroke-width='1'%3E%3Cpath d='M36 2 70 36 36 70 2 36Z'/%3E%3Cpath d='M36 14 58 36 36 58 14 36Z'/%3E%3Ccircle cx='36' cy='36' r='8'/%3E%3Cpath d='M36 0v14M36 58v14M0 36h14M58 36h14'/%3E%3C/g%3E%3C/svg%3E");
+  }
+
+  /* Scoped type stack for the heritage riad menu surfaces. */
+  .heritage {
+    --font-display: "Forum", "Cormorant Garamond", Georgia, serif;
+    --font-sans: "DM Sans", "Plus Jakarta Sans", system-ui, sans-serif;
+  }
+  html[lang="ar"] .heritage {
+    --font-display: "Amiri", Georgia, serif;
+    --font-sans: "Tajawal", "Readex Pro", system-ui, sans-serif;
+  }
+
   .frame-outline { border: 1px solid rgba(201, 162, 83, 0.2); }
 
   /* Editorial hairline rules — burnished gold at 18 %. */

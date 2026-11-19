@@ -33,11 +33,12 @@ export default function DishDrawer({ dish, onClose, orderable = false }: DishDra
         open={Boolean(dish)}
         onClose={onClose}
         ariaLabel={dish.name[locale]}
+        tone="aubergine"
         title={
           <div className="flex min-w-0 flex-1 items-center justify-between gap-3">
             <div className="min-w-0">
-              <p className="eyebrow text-brass">{t("dish.ingredients")}</p>
-              <h2 className="mt-1.5 truncate font-display text-2xl text-plaster">
+              <p className="eyebrow text-[#E6CFA0]">{t("dish.ingredients")}</p>
+              <h2 className="mt-1.5 truncate font-display text-2xl text-zellige">
                 {dish.name[locale]}
               </h2>
             </div>
@@ -45,7 +46,7 @@ export default function DishDrawer({ dish, onClose, orderable = false }: DishDra
               type="button"
               onClick={() => setShareOpen(true)}
               aria-label={t("share.title")}
-              className="grid size-9 shrink-0 place-items-center border border-brass/40 text-brass-light transition-colors hover:bg-brass hover:text-espresso"
+              className="grid size-9 shrink-0 place-items-center border border-[#C9A870]/45 text-[#E6CFA0] transition-colors hover:bg-[#C9A870] hover:text-aubergine-deep"
             >
               <Share2 className="size-4" strokeWidth={1.5} />
             </button>
@@ -61,7 +62,7 @@ export default function DishDrawer({ dish, onClose, orderable = false }: DishDra
               className={`size-full object-cover ${available ? "" : "opacity-55 grayscale"}`}
             />
             {available && (
-              <span className="absolute start-3 top-3 inline-flex items-center gap-1.5 bg-mint px-2.5 py-1 text-[11px] text-white">
+              <span className="absolute start-3 top-3 inline-flex items-center gap-1.5 bg-[#C9A870] px-2.5 py-1 text-[11px] text-aubergine-deep">
                 <Star className="size-3 fill-current" />
                 {t("menu.available")}
               </span>
@@ -76,24 +77,24 @@ export default function DishDrawer({ dish, onClose, orderable = false }: DishDra
           </div>
 
           <div className="mt-5 flex items-start justify-between gap-4 border-b border-brass/15 pb-5">
-            <p className="max-w-md text-[15px] leading-[1.8] text-plaster/70">
+            <p className="max-w-md text-[15px] leading-[1.8] text-zellige/75">
               {dish.description[locale]}
             </p>
-            <p className="shrink-0 font-display text-2xl text-brass-light">
+            <p className="shrink-0 font-display text-2xl text-[#E6CFA0]">
               {formatPrice(price)}
             </p>
           </div>
 
           <div className="mt-6 space-y-6">
             <div>
-              <p className="text-[12px] text-brass">{t("dish.ingredients")}</p>
-              <p className="mt-2 text-[14px] leading-[1.8] text-plaster/65">
+              <p className="text-[12px] text-[#E6CFA0]">{t("dish.ingredients")}</p>
+              <p className="mt-2 text-[14px] leading-[1.8] text-zellige/70">
                 {dish.description[locale]}
               </p>
             </div>
             <div>
-              <p className="text-[12px] text-brass">{t("dish.allergens")}</p>
-              <p className="mt-2 text-[14px] text-plaster/60">
+              <p className="text-[12px] text-[#E6CFA0]">{t("dish.allergens")}</p>
+              <p className="mt-2 text-[14px] text-zellige/65">
                 {dish.tags.length
                   ? dish.tags
                       .map((tag) =>
@@ -109,7 +110,7 @@ export default function DishDrawer({ dish, onClose, orderable = false }: DishDra
             </div>
           </div>
 
-          <div className="sticky bottom-0 -mx-5 mt-8 space-y-2 border-t border-brass/20 bg-espresso px-5 pb-2 pt-4 sm:-mx-7 sm:px-7">
+          <div className="sticky bottom-0 -mx-5 mt-8 space-y-2 border-t border-[#C9A870]/25 bg-aubergine-deep px-5 pb-2 pt-4 sm:-mx-7 sm:px-7">
             {orderable && available && (
               <button
                 type="button"
@@ -117,7 +118,7 @@ export default function DishDrawer({ dish, onClose, orderable = false }: DishDra
                   addItem(dish, price);
                   onClose();
                 }}
-                className="flex w-full items-center justify-center gap-2 bg-terracotta px-5 py-3.5 text-[12px] font-medium text-white transition-colors hover:bg-brass hover:text-espresso"
+                className="flex w-full items-center justify-center gap-2 bg-[#C9A870] px-5 py-3.5 text-[12px] font-medium text-aubergine-deep transition-colors hover:bg-[#E6CFA0]"
               >
                 {t("cart.add")} · {formatPrice(price)}
               </button>

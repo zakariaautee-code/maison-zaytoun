@@ -14,6 +14,13 @@ import type { CategoryId, Dish } from "@/lib/types";
 const W = 1240;
 const H = 1754;
 
+const PAPER = "#F7F2E9";
+const AUBERGINE = "#5A3A38";
+const DEEP = "#3E2725";
+const GOLD = "#C9A870";
+const GOLD_INK = "#8A692F";
+const MUTED = "#6B5545";
+
 function esc(value: string): string {
   return value
     .replace(/&/g, "&amp;")
@@ -43,6 +50,12 @@ async function imageToDataUrl(url: string): Promise<string> {
   }
 }
 
+/** A small zellige diamond used as a section ornament. */
+function diamond(cx: number, cy: number, r: number): string {
+  return `<path d="M${cx} ${cy - r} L${cx + r} ${cy} L${cx} ${cy + r} L${cx - r} ${cy} Z" fill="none" stroke="${GOLD}" stroke-width="1.6" />
+    <path d="M${cx} ${cy - r / 2} L${cx + r / 2} ${cy} L${cx} ${cy + r / 2} L${cx - r / 2} ${cy} Z" fill="${GOLD}" fill-opacity="0.55" />`;
+}
+
 function cardSvg(
   dishes: Dish[],
   categoryLabel: string,
@@ -50,59 +63,86 @@ function cardSvg(
   photos: string[] = []
 ): string {
   const rtl = locale === "ar";
-  const hero = photos[0] || dishes[0]?.image || HERO_IMAGE;
-  const rowHeight = dishes.length > 4 ? 172 : 222;
-  const textX = rtl ? W - 300 : 300;
-  const priceX = rtl ? 250 : W - 110;
+  const displayFont =
+    locale === "ar" ? "Amiri, Georgia, serif" : "Forum, Cormorant Garamond, Georgia, serif";
+  const bodyFont =
+    locale === "ar"
+      ? "Tajawal, Readex Pro, sans-serif"
+      : "DM Sans, Plus Jakarta Sans, sans-serif";
+
+  const thumbX = rtl ? W - 210 : 90;
+  const textX = rtl ? W - 250 : 250;
+  const priceX = rtl ? 90 : W - 90;
   const textAnchor = rtl ? "end" : "start";
   const priceAnchor = rtl ? "start" : "end";
-  const thumbX = rtl ? W - 230 : 110;
 
-  const defs = dishes
-    .slice(0, 7)
-    .map(
-      (_, i) =>
-        `<clipPath id="thumb${i}"><rect x="${thumbX}" y="${590 + i * rowHeight - 55}" width="140" height="140" /></clipPath>`
-    )
-    .join("");
-
+  const count = Math.min(dishes.length, 7);
+  const blockTop = rtl ? 510 : 470;
+  const blockHeight = rtl ? 1040 : 1090;
+  const rowHeight = Math.min(280, blockHeight / Math.max(count, 1));
+  const firstY = blockTop + 60;
+  const titleY = rtl ? 240 : 228;
+  const titleSize = rtl ? 84 : 104;
+  const categoryY = rtl ? 322 : 286;
+  const ornamentY = rtl ? 392 : 360;
   const rows = dishes
     .slice(0, 7)
     .map((dish, i) => {
-      const y = 590 + i * rowHeight;
-      const photo = photos[i] || dish.image;
+      const y = firstY + i * rowHeight;
+      const photo = photos[i] || dish.image || HERO_IMAGE;
       return `
         <g>
-          <image href="${esc(photo)}" x="${thumbX}" y="${y - 55}" width="140" height="140" preserveAspectRatio="xMidYMid slice" clip-path="url(#thumb${i})" />
-          <rect x="${thumbX}" y="${y - 55}" width="140" height="140" fill="none" stroke="#C9A253" stroke-width="3" />
-          <text x="${textX}" y="${y - 8}" text-anchor="${textAnchor}" font-family="Cormorant Garamond, Georgia, serif" font-size="40" fill="#F4EBDD">${esc(dish.name[locale])}</text>
-          <text x="${textX}" y="${y + 32}" text-anchor="${textAnchor}" font-family="Plus Jakarta Sans, sans-serif" font-size="20" fill="#B9C7B8">${esc(short(dish.description[locale], 64))}</text>
-          <text x="${priceX}" y="${y + 4}" text-anchor="${priceAnchor}" font-family="Cormorant Garamond, Georgia, serif" font-size="34" fill="#C9A253">${dish.price} MAD</text>
-          <line x1="110" y1="${y + 78}" x2="1130" y2="${y + 78}" stroke="#C9A253" stroke-opacity="0.28" stroke-width="1" />
+          <image href="${esc(photo)}" x="${thumbX}" y="${y - 52}" width="116" height="116" preserveAspectRatio="xMidYMid slice" clip-path="url(#thumb${i})" />
+          <rect x="${thumbX}" y="${y - 52}" width="116" height="116" fill="none" stroke="${GOLD}" stroke-width="2" />
+          <rect x="${thumbX + 5}" y="${y - 47}" width="106" height="106" fill="none" stroke="${GOLD}" stroke-opacity="0.4" stroke-width="1" />
+          <text x="${textX}" y="${y - 12}" text-anchor="${textAnchor}" font-family="${displayFont}" font-size="38" fill="${DEEP}">${esc(dish.name[locale])}</text>
+          <text x="${textX}" y="${y + 30}" text-anchor="${textAnchor}" font-family="${bodyFont}" font-size="22" fill="${MUTED}">${esc(short(dish.description[locale], 52))}</text>
+          <text x="${priceX}" y="${y + 2}" text-anchor="${priceAnchor}" font-family="${displayFont}" font-size="32" fill="${GOLD_INK}">${dish.price} MAD</text>
+          <line x1="90" y1="${y + 86}" x2="${W - 90}" y2="${y + 86}" stroke="${GOLD}" stroke-opacity="0.55" stroke-width="1" />
         </g>`;
     })
     .join("");
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
+  const clipDefs = dishes
+    .slice(0, 7)
+    .map(
+      (_, i) =>
+        `<clipPath id="thumb${i}"><rect x="${thumbX}" y="${firstY + i * rowHeight - 52}" width="116" height="116" /></clipPath>`
+    )
+    .join("");
+
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="direction:ltr">
     <defs>
-      ${defs}
-      <clipPath id="heroClip"><rect x="70" y="70" width="1100" height="420" /></clipPath>
+      ${clipDefs}
+      <pattern id="zellige" width="76" height="76" patternUnits="userSpaceOnUse">
+        <g fill="none" stroke="${GOLD}" stroke-opacity="0.12" stroke-width="1">
+          <path d="M38 2 74 38 38 74 2 38Z" />
+          <path d="M38 15 61 38 38 61 15 38Z" />
+          <circle cx="38" cy="38" r="8" />
+          <path d="M38 0v15M38 61v15M0 38h15M61 38h15" />
+        </g>
+      </pattern>
     </defs>
-    <rect width="${W}" height="${H}" fill="#121A15" />
-    <rect x="40" y="40" width="1160" height="1674" fill="none" stroke="#C9A253" stroke-width="3" />
-    <rect x="54" y="54" width="1132" height="1646" fill="none" stroke="#C9A253" stroke-opacity="0.3" stroke-width="1" />
 
-    <image href="${esc(hero)}" x="70" y="70" width="1100" height="420" preserveAspectRatio="xMidYMid slice" clip-path="url(#heroClip)" />
-    <rect x="70" y="70" width="1100" height="420" fill="#121A15" fill-opacity="0.62" />
-    <text x="105" y="185" font-family="Plus Jakarta Sans, sans-serif" font-size="20" fill="#C9A253">${esc(CLIENT_CONFIG.restaurantName)}</text>
-    <text x="105" y="300" font-family="Cormorant Garamond, Georgia, serif" font-style="italic" font-size="104" fill="#F4EBDD">Menu</text>
-    <text x="105" y="365" font-family="Plus Jakarta Sans, sans-serif" font-size="24" fill="#E0C281">${esc(categoryLabel)}</text>
+    <rect width="${W}" height="${H}" fill="${PAPER}" />
+    <rect width="${W}" height="${H}" fill="url(#zellige)" />
+    <rect x="40" y="40" width="${W - 80}" height="${H - 80}" fill="none" stroke="${GOLD}" stroke-width="2.5" />
+    <rect x="52" y="52" width="${W - 104}" height="${H - 104}" fill="none" stroke="${GOLD}" stroke-opacity="0.5" stroke-width="1" />
 
-    <line x1="70" y1="530" x2="1170" y2="530" stroke="#C9A253" stroke-width="2" />
+    <text x="${W / 2}" y="118" text-anchor="middle" font-family="${bodyFont}" font-size="20" letter-spacing="5" fill="${GOLD_INK}">${esc(CLIENT_CONFIG.restaurantName.toUpperCase())}</text>
+    <text x="${W / 2}" y="${titleY}" text-anchor="middle" font-family="${displayFont}" font-size="${titleSize}" fill="${AUBERGINE}">${esc(locale === "ar" ? "قائمة الطعام" : "Menu")}</text>
+    <text x="${W / 2}" y="${categoryY}" text-anchor="middle" font-family="${bodyFont}" font-size="24" letter-spacing="2" fill="${GOLD_INK}">${esc(categoryLabel)}</text>
+
+    <g>${diamond(W / 2 - 96, ornamentY, 9)}${diamond(W / 2, ornamentY, 13)}${diamond(W / 2 + 96, ornamentY, 9)}
+      <line x1="${W / 2 - 250}" y1="${ornamentY}" x2="${W / 2 - 130}" y2="${ornamentY}" stroke="${GOLD}" stroke-width="1" />
+      <line x1="${W / 2 + 130}" y1="${ornamentY}" x2="${W / 2 + 250}" y2="${ornamentY}" stroke="${GOLD}" stroke-width="1" />
+    </g>
+
     ${rows}
-    <line x1="70" y1="${H - 125}" x2="1170" y2="${H - 125}" stroke="#C9A253" stroke-width="2" />
-    <text x="80" y="${H - 75}" font-family="Plus Jakarta Sans, sans-serif" font-size="17" fill="#9AAE9F">${esc(CLIENT_CONFIG.city)} · ${esc(CLIENT_CONFIG.tagline)}</text>
-    <text x="1160" y="${H - 75}" text-anchor="end" font-family="Plus Jakarta Sans, sans-serif" font-size="17" fill="#C9A253">Prix en MAD</text>
+
+    <line x1="90" y1="${H - 150}" x2="${W - 90}" y2="${H - 150}" stroke="${GOLD}" stroke-width="2" />
+    <text x="90" y="${H - 100}" text-anchor="start" font-family="${bodyFont}" font-size="18" fill="${MUTED}">${esc(CLIENT_CONFIG.tagline)}</text>
+    <text x="${W - 90}" y="${H - 100}" text-anchor="end" font-family="${bodyFont}" font-size="18" fill="${GOLD_INK}">${esc(CLIENT_CONFIG.city)} · MAD</text>
   </svg>`;
 }
 
@@ -148,7 +188,6 @@ export default function MenuCardPrinter() {
     const blob = new Blob([finalSvg], { type: "image/svg+xml;charset=utf-8" });
     const objectUrl = URL.createObjectURL(blob);
     const image = new Image();
-    image.crossOrigin = "anonymous";
     image.onload = () => {
       try {
         const canvas = document.createElement("canvas");
@@ -198,7 +237,7 @@ export default function MenuCardPrinter() {
     const win = window.open("", "_blank");
     if (!win) return;
     win.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>Maison Zaytoun — Cartes menu</title>
-      <style>@page{size:A5 portrait;margin:0}html,body{margin:0;padding:0;background:#fff}.page{width:148mm;height:210mm;overflow:hidden;break-after:page;page-break-after:always}.page svg{width:148mm;height:210mm;display:block}</style>
+      <style>@page{size:A5 portrait;margin:0}html,body{margin:0;padding:0;background:${PAPER}}.page{width:148mm;height:210mm;overflow:hidden;break-after:page;page-break-after:always}.page svg{width:148mm;height:210mm;display:block}</style>
       </head><body>${pages.join("")}</body></html>`);
     win.document.close();
     win.focus();

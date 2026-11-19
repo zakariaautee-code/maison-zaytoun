@@ -69,22 +69,15 @@ function imageUrl(image?: SanityImage): string {
   }
 }
 
-function localized(value: Partial<LocalizedText> | undefined, fallback: string): LocalizedText {
-  return {
-    fr: value?.fr || fallback,
-    ar: value?.ar || fallback,
-    en: value?.en || fallback,
-  };
-}
-
 function toDish(doc: SanityDish, index: number): Dish | null {
   const id = doc.id || doc._id;
   if (!id) return null;
   const photo = imageUrl(doc.image);
   if (!photo) return null;
+  const fallback = MENU.find((dish) => dish.id === id);
   return {
     id,
-    category: doc.category || "starters",
+    category: doc.category || fallback?.category || "starters",
     price: Number(doc.price) || 0,
     image: photo,
     tags: (doc.tags || []).filter((tag): tag is DietaryTag =>
@@ -92,8 +85,16 @@ function toDish(doc: SanityDish, index: number): Dish | null {
     ),
     available: doc.available !== false,
     popular: Boolean(doc.popular),
-    name: localized(doc.name, id),
-    description: localized(doc.description, ""),
+    name: {
+      fr: doc.name?.fr || fallback?.name.fr || id,
+      ar: doc.name?.ar || fallback?.name.ar || fallback?.name.fr || id,
+      en: doc.name?.en || fallback?.name.en || fallback?.name.fr || id,
+    },
+    description: {
+      fr: doc.description?.fr || fallback?.description.fr || "",
+      ar: doc.description?.ar || fallback?.description.ar || "",
+      en: doc.description?.en || fallback?.description.en || "",
+    },
   };
 }
 

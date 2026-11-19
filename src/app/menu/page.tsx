@@ -15,7 +15,7 @@ import { useCart, useUI } from "@/lib/store";
 import type { Dish } from "@/lib/types";
 
 export default function MenuPage() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const [selectedDish, setSelectedDish] = useState<Dish | null>(null);
   const [table, setTable] = useState("");
   const openReserve = useUI((s) => s.openReserve);
@@ -37,24 +37,24 @@ export default function MenuPage() {
   }, [setTableNumber]);
 
   return (
-    <main className="relative z-10 min-h-screen bg-plaster">
+    <main className="heritage relative z-10 min-h-screen bg-zellige">
       <header className="fixed inset-x-0 top-0 z-50">
-        <div className="mx-auto flex h-[68px] max-w-[1400px] items-center justify-between gap-3 border-b border-brass/20 bg-espresso px-4 text-plaster sm:px-7">
+        <div className="mx-auto flex h-[68px] max-w-[1400px] items-center justify-between gap-3 border-b border-[#C9A870]/30 bg-aubergine-deep px-4 text-zellige sm:px-7">
           <div className="flex min-w-0 items-center gap-4">
             <Link
               href="/"
-              className="whitespace-nowrap text-[11px] text-plaster/60 transition-colors hover:text-brass-light"
+              className="whitespace-nowrap text-[11px] text-zellige/70 transition-colors hover:text-[#E6CFA0]"
             >
               {t("menuPage.back")}
             </Link>
-            <span className="hidden h-4 w-px bg-brass/25 sm:block" />
+            <span className="hidden h-4 w-px bg-[#C9A870]/35 sm:block" />
             <h1 className="hidden truncate font-display text-lg sm:block">
               {t("menuPage.title")}
             </h1>
           </div>
           <div className="flex shrink-0 items-center gap-3">
             {table && (
-              <span className="hidden border border-brass/40 px-3 py-1.5 text-[10px] tracking-[0.14em] text-brass-light sm:inline">
+              <span className="hidden border border-[#C9A870]/45 px-3 py-1.5 text-[11px] tracking-[0.14em] text-[#E6CFA0] sm:inline">
                 {t("menuPage.table")} {table}
               </span>
             )}
@@ -63,11 +63,11 @@ export default function MenuPage() {
               type="button"
               onClick={openCart}
               aria-label={t("cart.title")}
-              className="relative flex items-center gap-2 text-plaster/70 transition-colors hover:text-brass-light"
+              className="relative flex items-center gap-2 text-zellige/75 transition-colors hover:text-[#E6CFA0]"
             >
               <ShoppingBag className="size-[18px]" strokeWidth={1.5} />
               {count > 0 && (
-                <span className="border border-brass/40 px-1.5 text-[11px] tabular-nums text-brass-light">
+                <span className="border border-[#C9A870]/45 px-1.5 text-[11px] tabular-nums text-[#E6CFA0]">
                   {count}
                 </span>
               )}
@@ -75,7 +75,7 @@ export default function MenuPage() {
             <button
               type="button"
               onClick={openReserve}
-              className="bg-terracotta px-4 py-2.5 text-[11px] font-medium text-white transition-colors hover:bg-brass hover:text-espresso"
+              className="bg-[#C9A870] px-4 py-2.5 text-[11px] font-medium text-aubergine-deep transition-colors hover:bg-[#E6CFA0]"
             >
               {t("nav.reserve")}
             </button>
@@ -85,22 +85,44 @@ export default function MenuPage() {
 
       <div className="pt-[80px]">
         {table && (
-          <div className="border-b border-brass/20 bg-plaster-deep px-5 py-3 text-center text-[12px] text-ink">
+          <div className="border-b border-[#C9A870]/25 bg-zellige px-5 py-3 text-center text-[12px] text-aubergine">
             {t("menuPage.table")} {table}
           </div>
         )}
+        <section className="pattern-riad relative overflow-hidden border-b border-[#C9A870]/25">
+          <div className="pointer-events-none absolute inset-0 bg-aubergine/85" aria-hidden="true" />
+          <div className="relative mx-auto max-w-[1400px] px-5 py-14 text-center sm:px-8 sm:py-20">
+            <p className="text-[11px] font-medium tracking-[0.32em] text-[#E6CFA0]">
+              {CLIENT_CONFIG.restaurantName}
+            </p>
+            <div className="mx-auto mt-5 flex items-center justify-center gap-4">
+              <span className="h-px w-10 bg-[#C9A870]/60" />
+              <span className="text-[#C9A870]">✦</span>
+              <span className="h-px w-10 bg-[#C9A870]/60" />
+            </div>
+            <h2 className="mx-auto mt-5 max-w-3xl font-display text-4xl leading-[1.1] text-zellige sm:text-6xl">
+              {t("menu.title")}
+            </h2>
+            <p className="mx-auto mt-5 max-w-xl text-[14px] leading-[1.9] text-zellige/70">
+              {t("menu.subtitle")}
+            </p>
+            <p className="mt-6 text-[11px] tracking-[0.22em] text-[#E6CFA0]">
+              {locale === "ar" ? "دار زيتون" : CLIENT_CONFIG.tagline}
+            </p>
+          </div>
+        </section>
         <SpecialBanner />
         <MenuSection onOpenDish={setSelectedDish} orderable />
-        <div className="bg-espresso py-10 text-center text-[12px] text-plaster/50">
+        <div className="bg-aubergine-deep py-10 text-center text-[12px] text-zellige/55">
           {CLIENT_CONFIG.restaurantName} · {CLIENT_CONFIG.city}
         </div>
       </div>
 
-      <div className="sticky bottom-0 z-30 grid grid-cols-2 gap-2 border-t border-brass/30 bg-espresso p-3">
+      <div className="sticky bottom-0 z-30 grid grid-cols-2 gap-2 border-t border-[#C9A870]/30 bg-aubergine-deep p-3">
         <button
           type="button"
           onClick={openCart}
-          className="inline-flex items-center justify-center gap-2 bg-terracotta px-4 py-3.5 text-[12px] font-medium text-white transition-colors hover:bg-brass hover:text-espresso"
+          className="inline-flex items-center justify-center gap-2 bg-[#C9A870] px-4 py-3.5 text-[12px] font-medium text-aubergine-deep transition-colors hover:bg-[#E6CFA0]"
         >
           <ShoppingBag className="size-4" />
           {t("cart.title")} {count > 0 ? `(${count})` : ""}
@@ -108,7 +130,7 @@ export default function MenuPage() {
         <button
           type="button"
           onClick={openReserve}
-          className="inline-flex items-center justify-center gap-2 border border-brass/50 px-4 py-3.5 text-[12px] text-plaster transition-colors hover:bg-brass hover:text-espresso"
+          className="inline-flex items-center justify-center gap-2 border border-[#C9A870]/60 px-4 py-3.5 text-[12px] text-zellige transition-colors hover:bg-[#C9A870]/15"
         >
           <CalendarDays className="size-4" strokeWidth={1.5} />
           {t("hero.ctaReserve")}

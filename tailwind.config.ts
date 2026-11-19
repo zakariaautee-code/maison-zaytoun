@@ -30,6 +30,13 @@ const config: Config = {
           light: "#E0C281",
           deep: "#8E6B2E",
         },
+        /* Heritage riad editorial — warm aubergine, zellige cream, old gold. */
+        aubergine: {
+          DEFAULT: "#5A3A38",
+          deep: "#3E2725",
+          soft: "#6E4846",
+        },
+        zellige: "#F7F2E9",
         /* Back-compat aliases used by the existing sections */
         ink: {
           DEFAULT: "#121A15",
@@ -59,8 +66,8 @@ const config: Config = {
         },
       },
       fontFamily: {
-        display: ["var(--font-display)", "Cormorant Garamond", "Georgia", "serif"],
-        sans: ["var(--font-sans)", "Plus Jakarta Sans", "system-ui", "sans-serif"],
+        display: ["var(--font-display)", "Forum", "Cormorant Garamond", "Georgia", "serif"],
+        sans: ["var(--font-sans)", "DM Sans", "Plus Jakarta Sans", "system-ui", "sans-serif"],
         arabic: ["Amiri", "serif"],
       },
       letterSpacing: {

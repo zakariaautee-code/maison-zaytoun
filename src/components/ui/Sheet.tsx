@@ -13,6 +13,7 @@ type SheetProps = {
   side?: "bottom" | "right";
   title?: ReactNode;
   ariaLabel?: string;
+  tone?: "espresso" | "aubergine";
 };
 
 export default function Sheet({
@@ -22,6 +23,7 @@ export default function Sheet({
   side = "bottom",
   title,
   ariaLabel,
+  tone = "espresso",
 }: SheetProps) {
   const [mounted, setMounted] = useState(false);
   const { t, isRTL } = useI18n();
@@ -65,7 +67,7 @@ export default function Sheet({
           aria-label={ariaLabel}
         >
           <motion.div
-            className="absolute inset-0 bg-espresso/80"
+            className={`absolute inset-0 ${tone === "aubergine" ? "bg-aubergine-deep/80" : "bg-espresso/80"}`}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -76,7 +78,9 @@ export default function Sheet({
           <motion.div
             {...panelMotion}
             transition={{ type: "spring", damping: 32, stiffness: 340 }}
-            className={`relative flex max-h-[94dvh] w-full flex-col overflow-hidden border-brass/25 bg-espresso text-plaster ${
+            className={`relative flex max-h-[94dvh] w-full flex-col overflow-hidden border-brass/25 ${
+              tone === "aubergine" ? "heritage bg-aubergine-deep text-zellige" : "bg-espresso text-plaster"
+            } ${
               isBottom
                 ? "border-t sm:max-w-2xl"
                 : "h-dvh border-s sm:max-w-[460px]"

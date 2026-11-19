@@ -11,23 +11,23 @@ export default function SpecialBanner() {
   if (!special.active) return null;
 
   return (
-    <div className="border-y border-brass/50 bg-brass/10 px-4 py-3 text-plaster">
+    <div className="border-y border-[#C9A870]/40 bg-aubergine px-4 py-3 text-zellige">
       <div className="mx-auto flex max-w-[1400px] flex-wrap items-center justify-between gap-3">
         <div className="flex min-w-0 items-center gap-3">
-          <span className="text-[9px] font-semibold tracking-[0.22em] text-brass-light">
+          <span className="text-[9px] font-medium tracking-[0.22em] text-[#E6CFA0]">
             {t("special.badge")}
           </span>
-          <span className="truncate font-display text-lg text-plaster">
+          <span className="truncate font-display text-lg text-zellige">
             {special.title}
           </span>
-          <span className="font-display text-lg text-brass-light">
+          <span className="font-display text-lg text-[#E6CFA0]">
             {special.price} MAD
           </span>
         </div>
         <button
           type="button"
           onClick={openReserve}
-          className="inline-flex items-center gap-2 border border-brass/60 px-4 py-2 text-[10px] font-bold tracking-[0.14em] transition-colors hover:bg-brass hover:text-espresso"
+          className="inline-flex items-center gap-2 border border-[#C9A870]/60 px-4 py-2 text-[10px] font-medium tracking-[0.14em] transition-colors hover:bg-[#C9A870] hover:text-aubergine-deep"
         >
           {t("special.cta")}
           <ArrowUpRight className="size-3.5 rtl:rotate-180" />

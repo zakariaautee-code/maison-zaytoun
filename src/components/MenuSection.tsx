@@ -60,25 +60,28 @@ export default function MenuSection({ onOpenDish, orderable = false }: MenuSecti
   ];
 
   return (
-    <section id="menu" className="relative scroll-mt-[76px] bg-plaster">
+    <section id="menu" className="heritage relative scroll-mt-[76px] bg-zellige">
       {/* ── Section head ─────────────────────────────────────────────────── */}
-      <div className="mx-auto max-w-7xl px-5 pt-20 sm:px-8 sm:pt-28">
-        <div className="flex flex-col gap-8 border-b border-brass/25 pb-10 lg:flex-row lg:items-end lg:justify-between">
-          <div className="max-w-2xl text-start">
-            <p className="eyebrow text-saffron">{t("menu.eyebrow")}</p>
-            <h2 className="mt-4 font-display text-4xl leading-[1.03] text-espresso sm:text-5xl lg:text-[3.9rem]">
-              {t("menu.title")}
-            </h2>
-            <p className="mt-5 max-w-xl text-[15px] leading-[1.9] text-ink-soft">
-              {t("menu.subtitle")}
-            </p>
+      <div className="mx-auto max-w-7xl px-5 pt-16 sm:px-8 sm:pt-20">
+        <div className="flex flex-col items-center gap-6 border-b border-[#C9A870]/30 pb-10 text-center">
+          <div className="flex items-center justify-center gap-3">
+            <span className="h-px w-8 bg-[#C9A870]/60" />
+            <span className="text-[11px] font-medium tracking-[0.3em] text-aubergine-soft">
+              {t("menu.eyebrow")}
+            </span>
+            <span className="h-px w-8 bg-[#C9A870]/60" />
           </div>
-
+          <h2 className="font-display text-4xl leading-[1.03] text-aubergine sm:text-5xl">
+            {t("menu.title")}
+          </h2>
+          <p className="max-w-xl text-[14px] leading-[1.9] text-aubergine-soft">
+            {t("menu.subtitle")}
+          </p>
         </div>
       </div>
 
       {/* ── Sticky editorial category bar ────────────────────────────────── */}
-      <div className="sticky top-16 z-30 mt-10 border-y border-brass/20 bg-espresso">
+      <div className="sticky top-16 z-30 mt-10 border-y border-[#C9A870]/25 bg-aubergine">
         <div className="mx-auto max-w-7xl px-5 sm:px-8">
           <div
             role="tablist"
@@ -94,8 +97,8 @@ export default function MenuSection({ onOpenDish, orderable = false }: MenuSecti
                   type="button"
                   aria-selected={active}
                   onClick={() => setCategory(tab.id)}
-                  className={`relative shrink-0 whitespace-nowrap pb-3 text-[10px] font-semibold uppercase tracking-[0.18em] transition-colors sm:text-[11px] ${
-                    active ? "text-plaster" : "text-plaster/45 hover:text-plaster/80"
+                  className={`relative shrink-0 whitespace-nowrap pb-3 text-[11px] font-medium tracking-[0.14em] transition-colors ${
+                    active ? "text-[#E6CFA0]" : "text-zellige/55 hover:text-zellige/90"
                   }`}
                 >
                   {tab.label}
@@ -103,7 +106,7 @@ export default function MenuSection({ onOpenDish, orderable = false }: MenuSecti
                     <motion.span
                       layoutId="menu-tab-underline"
                       transition={{ type: "spring", stiffness: 400, damping: 34 }}
-                      className="absolute inset-x-0 bottom-0 h-px bg-brass"
+                      className="absolute inset-x-0 bottom-0 h-px bg-[#C9A870]"
                     />
                   )}
                 </button>
@@ -111,15 +114,15 @@ export default function MenuSection({ onOpenDish, orderable = false }: MenuSecti
             })}
           </div>
 
-          <div className="flex flex-col gap-3 border-t border-brass/10 py-3 lg:flex-row lg:items-center lg:gap-5">
+          <div className="flex flex-col gap-3 border-t border-[#C9A870]/15 py-3 lg:flex-row lg:items-center lg:gap-5">
             <div className="relative w-full lg:max-w-xs">
-              <Search className="pointer-events-none absolute start-3 top-1/2 size-3.5 -translate-y-1/2 text-brass" />
+              <Search className="pointer-events-none absolute start-3 top-1/2 size-3.5 -translate-y-1/2 text-[#C9A870]" />
               <input
                 type="search"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder={t("menu.search")}
-                className="w-full border border-brass/25 bg-transparent py-2 ps-9 pe-3 text-xs text-plaster transition placeholder:text-plaster/35 focus:border-brass focus:bg-brass/5 focus:outline-none"
+                className="w-full border border-[#C9A870]/30 bg-transparent py-2 ps-9 pe-3 text-xs text-zellige transition placeholder:text-zellige/35 focus:border-[#C9A870] focus:bg-[#C9A870]/10 focus:outline-none"
               />
             </div>
 
@@ -133,10 +136,10 @@ export default function MenuSection({ onOpenDish, orderable = false }: MenuSecti
                     type="button"
                     onClick={() => toggleFilter(filter.id)}
                     aria-pressed={active}
-                    className={`inline-flex shrink-0 items-center gap-1.5 border px-2.5 py-1.5 text-[9px] font-semibold uppercase tracking-[0.14em] transition ${
+                    className={`inline-flex shrink-0 items-center gap-1.5 border px-2.5 py-1.5 text-[10px] font-medium tracking-[0.1em] transition ${
                       active
-                        ? "border-brass bg-brass text-espresso"
-                        : "border-brass/25 text-plaster/55 hover:border-brass/60 hover:text-plaster"
+                        ? "border-[#C9A870] bg-[#C9A870] text-aubergine-deep"
+                        : "border-[#C9A870]/30 text-zellige/60 hover:border-[#C9A870]/70 hover:text-zellige"
                     }`}
                   >
                     <Icon className="size-3" strokeWidth={1.8} />
@@ -151,7 +154,7 @@ export default function MenuSection({ onOpenDish, orderable = false }: MenuSecti
                     setFilters([]);
                     setQuery("");
                   }}
-                  className="inline-flex shrink-0 items-center gap-1 text-[9px] font-semibold uppercase tracking-[0.14em] text-plaster/40 transition hover:text-saffron"
+                  className="inline-flex shrink-0 items-center gap-1 text-[10px] font-medium tracking-[0.1em] text-zellige/45 transition hover:text-[#E6CFA0]"
                 >
                   <X className="size-3" />
                   {t("filter.clear")}
@@ -164,8 +167,8 @@ export default function MenuSection({ onOpenDish, orderable = false }: MenuSecti
 
       {/* ── Dish grid ────────────────────────────────────────────────────── */}
       <div className="mx-auto max-w-7xl px-5 pb-20 pt-8 sm:px-8 sm:pb-28">
-        <p className="mb-6 flex items-center gap-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-ink-muted">
-          <span className="h-px w-8 bg-brass/50" />
+        <p className="mb-6 flex items-center gap-3 text-[10px] font-medium tracking-[0.16em] text-aubergine-soft">
+          <span className="h-px w-8 bg-[#C9A870]/70" />
           {dishes.length} {t("menu.results")}
         </p>
 
@@ -188,9 +191,9 @@ export default function MenuSection({ onOpenDish, orderable = false }: MenuSecti
             </AnimatePresence>
           </motion.div>
         ) : (
-          <div className="border border-dashed border-brass/40 px-6 py-20 text-center">
-            <p className="font-display text-2xl text-espresso">{t("menu.noResults")}</p>
-            <p className="mt-2 text-sm text-ink-muted">{t("menu.noResultsHint")}</p>
+          <div className="border border-dashed border-[#C9A870]/50 px-6 py-20 text-center">
+            <p className="font-display text-2xl text-aubergine">{t("menu.noResults")}</p>
+            <p className="mt-2 text-sm text-aubergine-soft">{t("menu.noResultsHint")}</p>
           </div>
         )}
       </div>
