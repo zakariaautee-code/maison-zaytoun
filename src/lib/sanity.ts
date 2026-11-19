@@ -8,11 +8,14 @@ export const SANITY_DATASET =
   process.env.NEXT_PUBLIC_SANITY_DATASET || "production";
 export const sanityConfigured = Boolean(SANITY_PROJECT_ID);
 
+const SANITY_TOKEN = process.env.SANITY_API_READ_TOKEN;
+
 const config = {
   projectId: SANITY_PROJECT_ID || "placeholder",
   dataset: SANITY_DATASET,
   apiVersion: "2025-01-01",
-  useCdn: true,
+  useCdn: !SANITY_TOKEN,
+  ...(SANITY_TOKEN ? { token: SANITY_TOKEN } : {}),
 };
 
 const client = createClient(config);
