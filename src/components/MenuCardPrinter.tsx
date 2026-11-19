@@ -2,12 +2,14 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { Download, Printer } from "lucide-react";
+import { Download, FileCode, Printer } from "lucide-react";
 import { CLIENT_CONFIG } from "@/config/client";
+import { HERO_IMAGE } from "@/lib/constants";
 import { useDishes } from "@/lib/dishes-context";
 import { useI18n } from "@/lib/i18n";
 import { CATEGORIES } from "@/lib/menu-data";
 import { priceFor, useAdmin } from "@/lib/store";
+import { useUI } from "@/lib/store";
 import type { CategoryId, Dish } from "@/lib/types";
 
 const W = 1240;
@@ -22,70 +24,97 @@ function esc(value: string): string {
     .replace(/'/g, "&apos;");
 }
 
-function wrap(value: string, max: number): string[] {
-  const words = value.split(/\s+/).filter(Boolean);
-  const lines: string[] = [];
-  let line = "";
-  for (const word of words) {
-    if ((line + " " + word).trim().length > max && line) {
-      lines.push(line);
-      line = word;
-    } else {
-      line = (line ? line + " " : "") + word;
-    }
-  }
-  if (line) lines.push(line);
-  return lines.slice(0, 2);
+function short(value: string, max: number): string {
+  if (value.length <= max) return value;
+  return value.slice(0, max - 1).trimEnd() + "…";
 }
 
+type CardDishes = Dish[];
+
 function cardSvg(
-  dishes: Dish[],
+  dishes: CardDishes,
   categoryLabel: string,
-  locale: "fr" | "ar" | "en"
+  locale: "fr" | "ar" | "en",
+  imageUrls: string[] = []
 ): string {
   const rtl = locale === "ar";
+  const photos = [
+    dishes[0]?.image || HERO_IMAGE,
+    dishes[1]?.image || dishes[0]?.image || HERO_IMAGE,
+    dishes[2]?.image || dishes[0]?.image || HERO_IMAGE,
+  ].map((url, i) => imageUrls[i] || url);
+
+  const listRight = rtl ? W - 100 : 660;
+  const listLeft = rtl ? 100 : 660;
   const nameX = rtl ? W - 100 : 100;
-  const priceX = rtl ? 100 : W - 100;
-  const anchor = rtl ? "end" : "start";
+  const priceX = rtl ? 660 : W - 100;
+  const nameAnchor = rtl ? "end" : "start";
   const priceAnchor = rtl ? "start" : "end";
+  const photoCx = rtl ? 360 : 880;
 
   const rows = dishes
-    .map((dish, index) => {
-      const y = 470 + index * 218;
-      const description = wrap(dish.description[locale], 58)
-        .map(
-          (line, i) =>
-            `<text x="${nameX}" y="${y + 44 + i * 28}" text-anchor="${anchor}" font-family="Plus Jakarta Sans, sans-serif" font-size="18" fill="#526057">${esc(line)}</text>`
-        )
-        .join("");
+    .slice(0, 7)
+    .map((dish, i) => {
+      const y = 400 + i * 158;
       return `
-        <text x="${nameX}" y="${y}" text-anchor="${anchor}" font-family="Cormorant Garamond, Georgia, serif" font-size="40" fill="#1A241E">${esc(dish.name[locale])}</text>
-        <text x="${priceX}" y="${y}" text-anchor="${priceAnchor}" font-family="Cormorant Garamond, Georgia, serif" font-size="34" fill="#9E7432">${dish.price} MAD</text>
-        ${description}
-        <line x1="100" y1="${y + 100}" x2="1140" y2="${y + 100}" stroke="#C9A253" stroke-opacity="0.35" stroke-width="1" />`;
+        <text x="${nameX}" y="${y}" text-anchor="${nameAnchor}" font-family="Cormorant Garamond, Georgia, serif" font-size="36" fill="#F4EBDD">${esc(dish.name[locale])}</text>
+        <text x="${priceX}" y="${y}" text-anchor="${priceAnchor}" font-family="Cormorant Garamond, Georgia, serif" font-size="30" fill="#C9A253">${dish.price} MAD</text>
+        <text x="${nameX}" y="${y + 30}" text-anchor="${nameAnchor}" font-family="Plus Jakarta Sans, sans-serif" font-size="15" fill="#9AAE9F">${esc(short(dish.description[locale], 62))}</text>
+        <line x1="${listLeft}" y1="${y + 58}" x2="${listRight}" y2="${y + 58}" stroke="#C9A253" stroke-opacity="0.28" stroke-width="1" />`;
     })
     .join("");
 
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
-    <rect width="${W}" height="${H}" fill="#F6EFE6" />
-    <rect x="46" y="46" width="${W - 92}" height="${H - 92}" fill="none" stroke="#C9A253" stroke-width="3" />
-    <rect x="62" y="62" width="${W - 124}" height="${H - 124}" fill="none" stroke="#C9A253" stroke-opacity="0.55" stroke-width="1.5" />
-    <text x="${W / 2}" y="145" text-anchor="middle" font-family="Cormorant Garamond, Georgia, serif" font-size="36" fill="#1A241E">${esc(CLIENT_CONFIG.restaurantName)}</text>
-    <text x="${W / 2}" y="185" text-anchor="middle" font-family="Plus Jakarta Sans, sans-serif" font-size="17" fill="#526057">${esc(CLIENT_CONFIG.city)} · ${esc(CLIENT_CONFIG.tagline)}</text>
-    <line x1="420" y1="225" x2="820" y2="225" stroke="#C9A253" stroke-width="2" />
-    <text x="${W / 2}" y="325" text-anchor="middle" font-family="Cormorant Garamond, Georgia, serif" font-style="italic" font-size="100" fill="#1A241E">La Carte</text>
-    <text x="${W / 2}" y="410" text-anchor="middle" font-family="Plus Jakarta Sans, sans-serif" font-size="24" fill="#9E7432">${esc(categoryLabel)}</text>
+    <defs>
+      <clipPath id="mainPhoto"><circle cx="${photoCx}" cy="540" r="212" /></clipPath>
+      <clipPath id="smallPhotoA"><circle cx="${photoCx - 130}" cy="900" r="66" /></clipPath>
+      <clipPath id="smallPhotoB"><circle cx="${photoCx + 150}" cy="940" r="54" /></clipPath>
+    </defs>
+    <rect width="${W}" height="${H}" fill="#121A15" />
+    <circle cx="${rtl ? 1080 : 160}" cy="${rtl ? 110 : 1650}" r="420" fill="#1B261F" opacity="0.55" />
+    <rect x="46" y="46" width="${W - 92}" height="${H - 92}" fill="none" stroke="#C9A253" stroke-opacity="0.7" stroke-width="2" />
+    <rect x="62" y="62" width="${W - 124}" height="${H - 124}" fill="none" stroke="#C9A253" stroke-opacity="0.25" stroke-width="1" />
+
+    <text x="100" y="130" font-family="Plus Jakarta Sans, sans-serif" font-size="20" fill="#C9A253">${esc(CLIENT_CONFIG.restaurantName)}</text>
+    <text x="100" y="225" font-family="Cormorant Garamond, Georgia, serif" font-style="italic" font-size="96" fill="#F4EBDD">Menu</text>
+    <text x="100" y="275" font-family="Plus Jakarta Sans, sans-serif" font-size="19" fill="#C9A253">${esc(categoryLabel)}</text>
+    <line x1="100" y1="310" x2="1140" y2="310" stroke="#C9A253" stroke-width="2" />
+
+    <image href="${esc(photos[0])}" x="${photoCx - 212}" y="328" width="424" height="424" preserveAspectRatio="xMidYMid slice" clip-path="url(#mainPhoto)" />
+    <circle cx="${photoCx}" cy="540" r="212" fill="none" stroke="#C9A253" stroke-width="4" />
+    <image href="${esc(photos[1])}" x="${photoCx - 196}" y="834" width="132" height="132" preserveAspectRatio="xMidYMid slice" clip-path="url(#smallPhotoA)" />
+    <circle cx="${photoCx - 130}" cy="900" r="66" fill="none" stroke="#C9A253" stroke-width="3" />
+    <image href="${esc(photos[2])}" x="${photoCx + 96}" y="886" width="108" height="108" preserveAspectRatio="xMidYMid slice" clip-path="url(#smallPhotoB)" />
+    <circle cx="${photoCx + 150}" cy="940" r="54" fill="none" stroke="#C9A253" stroke-width="3" />
+
     ${rows}
+
     <line x1="100" y1="${H - 130}" x2="1140" y2="${H - 130}" stroke="#C9A253" stroke-width="2" />
-    <text x="100" y="${H - 85}" font-family="Plus Jakarta Sans, sans-serif" font-size="16" fill="#526057">${esc(CLIENT_CONFIG.restaurantName)} · ${esc(CLIENT_CONFIG.city)}</text>
-    <text x="1140" y="${H - 85}" text-anchor="end" font-family="Plus Jakarta Sans, sans-serif" font-size="16" fill="#526057">Prix en MAD</text>
+    <text x="100" y="${H - 82}" font-family="Plus Jakarta Sans, sans-serif" font-size="16" fill="#9AAE9F">${esc(CLIENT_CONFIG.city)} · ${esc(CLIENT_CONFIG.tagline)}</text>
+    <text x="1140" y="${H - 82}" text-anchor="end" font-family="Plus Jakarta Sans, sans-serif" font-size="16" fill="#C9A253">Prix en MAD</text>
   </svg>`;
+}
+
+async function imageToDataUrl(url: string): Promise<string> {
+  try {
+    const response = await fetch(url, { mode: "cors" });
+    const blob = await response.blob();
+    return await new Promise<string>((resolve) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result));
+      reader.onerror = () => resolve(url);
+      reader.readAsDataURL(blob);
+    });
+  } catch {
+    return url;
+  }
 }
 
 export default function MenuCardPrinter() {
   const { t, locale } = useI18n();
   const allDishes = useDishes();
   const priceOverrides = useAdmin((s) => s.priceOverrides);
+  const showToast = useUI((s) => s.showToast);
   const [category, setCategory] = useState<CategoryId>("starters");
 
   const categories = CATEGORIES.map((c) => ({ id: c.id, label: c.label[locale] }));
@@ -104,25 +133,51 @@ export default function MenuCardPrinter() {
     [dishes, activeLabel, locale]
   );
 
-  const downloadPng = () => {
+  const downloadSvg = () => {
     const blob = new Blob([svg], { type: "image/svg+xml;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `maison-zaytoun-carte-${category}.svg`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const downloadPng = async () => {
+    const photos = await Promise.all(
+      dishes.slice(0, 3).map((dish) => imageToDataUrl(dish.image))
+    );
+    const finalSvg = cardSvg(dishes, activeLabel, locale, photos);
+    const blob = new Blob([finalSvg], { type: "image/svg+xml;charset=utf-8" });
     const objectUrl = URL.createObjectURL(blob);
     const image = new Image();
+    image.crossOrigin = "anonymous";
     image.onload = () => {
-      const canvas = document.createElement("canvas");
-      canvas.width = W;
-      canvas.height = H;
-      canvas.getContext("2d")?.drawImage(image, 0, 0, W, H);
-      canvas.toBlob((png) => {
-        if (!png) return;
-        const url = URL.createObjectURL(png);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = `maison-zaytoun-carte-${category}.png`;
-        link.click();
-        URL.revokeObjectURL(url);
-      }, "image/png");
+      try {
+        const canvas = document.createElement("canvas");
+        canvas.width = W;
+        canvas.height = H;
+        canvas.getContext("2d")?.drawImage(image, 0, 0, W, H);
+        canvas.toBlob((png) => {
+          if (png) {
+            const url = URL.createObjectURL(png);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = `maison-zaytoun-carte-${category}.png`;
+            link.click();
+            URL.revokeObjectURL(url);
+          } else {
+            downloadSvg();
+          }
+        }, "image/png");
+      } catch {
+        downloadSvg();
+      }
       URL.revokeObjectURL(objectUrl);
+    };
+    image.onerror = () => {
+      downloadSvg();
+      showToast(t("admin.downloadCard"));
     };
     image.src = objectUrl;
   };
@@ -181,11 +236,19 @@ export default function MenuCardPrinter() {
         </select>
         <button
           type="button"
-          onClick={downloadPng}
+          onClick={() => void downloadPng()}
           className="inline-flex items-center gap-2 bg-brass px-4 py-2.5 text-[11px] text-espresso transition hover:bg-brass-light"
         >
           <Download className="size-4" />
           {t("admin.downloadCard")}
+        </button>
+        <button
+          type="button"
+          onClick={downloadSvg}
+          className="inline-flex items-center gap-2 border border-brass/40 px-4 py-2.5 text-[11px] text-plaster transition hover:border-brass"
+        >
+          <FileCode className="size-4" />
+          {t("admin.downloadSvg")}
         </button>
         <button
           type="button"
