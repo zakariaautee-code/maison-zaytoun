@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import MenuCardPrinter from "@/components/MenuCardPrinter";
 import { CLIENT_CONFIG } from "@/config/client";
 import { SITE_ORIGIN, TABLE_NUMBERS } from "@/lib/constants";
 import { useI18n, type TranslationKey } from "@/lib/i18n";
@@ -172,6 +173,8 @@ export default function AdminPanel() {
             </button>
           </div>
         </div>
+
+        <MenuCardPrinter />
 
         {/* ── Special mode ─────────────────────────────────────────────────── */}
         <section className="mt-8 border border-brass/25 bg-coal/80 p-5 print:hidden">
