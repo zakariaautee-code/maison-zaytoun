@@ -1,5 +1,6 @@
 "use client";
 
+import CartDrawer from "@/components/CartDrawer";
 import ReservationModal from "@/components/ReservationModal";
 import Toast from "@/components/Toast";
 import { useUI } from "@/lib/store";
@@ -12,6 +13,7 @@ export default function GlobalOverlays() {
   return (
     <>
       <Toast />
+      <CartDrawer />
       <ReservationModal open={reserveOpen} onClose={closeReserve} />
     </>
   );

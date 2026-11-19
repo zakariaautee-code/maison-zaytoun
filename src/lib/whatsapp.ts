@@ -11,6 +11,33 @@ export function buildWaUrl(phone: string, message: string): string {
 export const reservationWaUrl = (message: string) =>
   buildWaUrl(WHATSAPP_NUMBER, message);
 
+export const orderWaUrl = reservationWaUrl;
+
+/** Compact dine-in order receipt for the QR menu. */
+export function buildOrderMessage(args: {
+  t: TFunc;
+  locale: Locale;
+  items: Array<{ name: string; price: number; quantity: number }>;
+  tableNumber: string;
+  total: number;
+}): string {
+  const { t, locale, items, tableNumber, total } = args;
+  const l = LABELS[locale];
+  return [
+    `🍽️ ${t("cart.receiptTitle")}`,
+    "━━━━━━━━━━━━━━━━━━━━",
+    `${l.table}: ${tableNumber || "—"}`,
+    "",
+    ...items.flatMap((item) => [
+      `${item.quantity} × ${item.name}`,
+      `   ${item.quantity * item.price} MAD`,
+    ]),
+    "━━━━━━━━━━━━━━━━━━━━",
+    `${l.total}: ${total} MAD`,
+    t("cart.checkoutHint"),
+  ].join("\n");
+}
+
 const LABELS: Record<
   Locale,
   {
@@ -23,6 +50,8 @@ const LABELS: Record<
     phone: string;
     note: string;
     map: string;
+    table: string;
+    total: string;
   }
 > = {
   fr: {
@@ -35,6 +64,8 @@ const LABELS: Record<
     phone: "Tél",
     note: "Note",
     map: "Itinéraire",
+    table: "Table n°",
+    total: "TOTAL",
   },
   ar: {
     guests: "الأشخاص",
@@ -46,6 +77,8 @@ const LABELS: Record<
     phone: "الهاتف",
     note: "ملاحظة",
     map: "الاتجاهات",
+    table: "طاولة رقم",
+    total: "المجموع",
   },
   en: {
     guests: "Guests",
@@ -57,6 +90,8 @@ const LABELS: Record<
     phone: "Phone",
     note: "Note",
     map: "Directions",
+    table: "Table no.",
+    total: "TOTAL",
   },
 };
 

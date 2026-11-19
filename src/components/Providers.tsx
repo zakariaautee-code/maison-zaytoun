@@ -4,7 +4,7 @@ import { useEffect, type ReactNode } from "react";
 import GlobalOverlays from "@/components/GlobalOverlays";
 import { I18nProvider } from "@/lib/i18n";
 import { DishesContext } from "@/lib/dishes-context";
-import { useAdmin } from "@/lib/store";
+import { useAdmin, useCart } from "@/lib/store";
 import type { Dish } from "@/lib/types";
 
 export default function Providers({
@@ -17,6 +17,7 @@ export default function Providers({
   useEffect(() => {
     // Rehydrate persisted stores after mount to avoid SSR/client mismatches.
     void useAdmin.persist.rehydrate();
+    void useCart.persist.rehydrate();
 
     // Keep the customer menu in sync when the owner edits it in another tab.
     const onStorage = (event: StorageEvent) => {

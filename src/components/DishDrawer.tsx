@@ -4,20 +4,22 @@ import { useState } from "react";
 import { CalendarDays, Share2, Star } from "lucide-react";
 import Sheet from "./ui/Sheet";
 import DishShareModal from "./DishShareModal";
-import { availableFor, priceFor, useAdmin, useUI } from "@/lib/store";
+import { availableFor, priceFor, useAdmin, useCart, useUI } from "@/lib/store";
 import { useI18n } from "@/lib/i18n";
 import type { Dish } from "@/lib/types";
 
 type DishDrawerProps = {
   dish: Dish | null;
   onClose: () => void;
+  orderable?: boolean;
 };
 
-export default function DishDrawer({ dish, onClose }: DishDrawerProps) {
+export default function DishDrawer({ dish, onClose, orderable = false }: DishDrawerProps) {
   const { t, locale, formatPrice } = useI18n();
   const priceOverrides = useAdmin((s) => s.priceOverrides);
   const availabilityOverrides = useAdmin((s) => s.availabilityOverrides);
   const openReserve = useUI((s) => s.openReserve);
+  const addItem = useCart((s) => s.addItem);
   const [shareOpen, setShareOpen] = useState(false);
 
   if (!dish) return null;
@@ -107,7 +109,19 @@ export default function DishDrawer({ dish, onClose }: DishDrawerProps) {
             </div>
           </div>
 
-          <div className="sticky bottom-0 -mx-5 mt-8 border-t border-brass/20 bg-espresso px-5 pb-2 pt-4 sm:-mx-7 sm:px-7">
+          <div className="sticky bottom-0 -mx-5 mt-8 space-y-2 border-t border-brass/20 bg-espresso px-5 pb-2 pt-4 sm:-mx-7 sm:px-7">
+            {orderable && available && (
+              <button
+                type="button"
+                onClick={() => {
+                  addItem(dish, price);
+                  onClose();
+                }}
+                className="flex w-full items-center justify-center gap-2 bg-terracotta px-5 py-3.5 text-[12px] font-medium text-white transition-colors hover:bg-brass hover:text-espresso"
+              >
+                {t("cart.add")} · {formatPrice(price)}
+              </button>
+            )}
             <button
               type="button"
               onClick={() => {

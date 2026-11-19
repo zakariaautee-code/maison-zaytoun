@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Flame, Leaf, WheatOff } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
+import { useCart } from "@/lib/store";
 import type { DietaryTag, Dish } from "@/lib/types";
 
 const TAG_STYLES: Record<
@@ -19,10 +20,18 @@ type DishCardProps = {
   price: number;
   available: boolean;
   onOpen: (dish: Dish) => void;
+  orderable?: boolean;
 };
 
-export default function DishCard({ dish, price, available, onOpen }: DishCardProps) {
+export default function DishCard({
+  dish,
+  price,
+  available,
+  onOpen,
+  orderable = false,
+}: DishCardProps) {
   const { t, locale, formatPrice } = useI18n();
+  const addItem = useCart((s) => s.addItem);
 
   return (
     <motion.article
@@ -98,6 +107,15 @@ export default function DishCard({ dish, price, available, onOpen }: DishCardPro
           >
             {t("dish.view")}
           </button>
+          {orderable && available && (
+            <button
+              type="button"
+              onClick={() => addItem(dish, price)}
+              className="inline-flex items-center bg-terracotta px-3 py-2 text-[11px] font-medium text-white transition-colors hover:bg-ink"
+            >
+              {t("cart.add")}
+            </button>
+          )}
           {!available && (
             <span className="border border-brass/25 px-3 py-1.5 text-[11px] text-ink-muted">
               {t("menu.soldOut")}

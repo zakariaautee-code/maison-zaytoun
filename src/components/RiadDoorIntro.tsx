@@ -9,19 +9,20 @@ import { useI18n } from "@/lib/i18n";
 const STORAGE_KEY = "mz_door_opened";
 
 /** Carved riad doors that open once per session, revealing the landing hero. */
-export default function RiadDoorIntro() {
+export default function RiadDoorIntro({ force = false }: { force?: boolean }) {
   const { t, isRTL, locale } = useI18n();
   const [visible, setVisible] = useState(false);
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    if (window.location.pathname !== "/") return;
+    if (!force && window.location.pathname !== "/") return;
+    const key = force ? "mz_qr_door_opened" : STORAGE_KEY;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      sessionStorage.setItem(STORAGE_KEY, "1");
+      sessionStorage.setItem(key, "1");
       return;
     }
-    if (!sessionStorage.getItem(STORAGE_KEY)) setVisible(true);
-  }, []);
+    if (!sessionStorage.getItem(key)) setVisible(true);
+  }, [force]);
 
   useEffect(() => {
     if (!visible) return;
@@ -33,10 +34,10 @@ export default function RiadDoorIntro() {
   }, [visible]);
 
   const finish = useCallback(() => {
-    sessionStorage.setItem(STORAGE_KEY, "1");
+    sessionStorage.setItem(force ? "mz_qr_door_opened" : STORAGE_KEY, "1");
     setOpen(false);
     setVisible(false);
-  }, []);
+  }, [force]);
 
   useEffect(() => {
     if (!visible || !open) return;

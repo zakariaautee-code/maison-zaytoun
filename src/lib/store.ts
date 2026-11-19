@@ -83,11 +83,85 @@ export function availableFor(
   return overrides[dish.id] ?? dish.available;
 }
 
+// ── Lightweight table ordering (WhatsApp receipt) ─────────────────────────────
+export type OrderItem = {
+  key: string;
+  dishId: string;
+  name: string;
+  price: number;
+  quantity: number;
+};
+
+type CartState = {
+  items: OrderItem[];
+  tableNumber: string;
+  addItem: (dish: Dish, price: number) => void;
+  removeItem: (key: string) => void;
+  setQuantity: (key: string, quantity: number) => void;
+  setTableNumber: (value: string) => void;
+  clear: () => void;
+};
+
+export const useCart = create<CartState>()(
+  persist(
+    (set) => ({
+      items: [],
+      tableNumber: "",
+      addItem: (dish, price) =>
+        set((state) => {
+          const existing = state.items.find((item) => item.key === dish.id);
+          if (existing) {
+            return {
+              items: state.items.map((item) =>
+                item.key === dish.id
+                  ? { ...item, quantity: item.quantity + 1, price }
+                  : item
+              ),
+            };
+          }
+          return {
+            items: [
+              ...state.items,
+              {
+                key: dish.id,
+                dishId: dish.id,
+                name: dish.name.fr,
+                price,
+                quantity: 1,
+              },
+            ],
+          };
+        }),
+      removeItem: (key) =>
+        set((state) => ({ items: state.items.filter((item) => item.key !== key) })),
+      setQuantity: (key, quantity) =>
+        set((state) => ({
+          items:
+            quantity <= 0
+              ? state.items.filter((item) => item.key !== key)
+              : state.items.map((item) =>
+                  item.key === key ? { ...item, quantity } : item
+                ),
+        })),
+      setTableNumber: (tableNumber) => set({ tableNumber }),
+      clear: () => set({ items: [] }),
+    }),
+    {
+      name: "mz-order",
+      storage: createJSONStorage(() => localStorage),
+      skipHydration: true,
+    }
+  )
+);
+
 // ── Global UI state shared across every route ─────────────────────────────────
 type UIState = {
   reserveOpen: boolean;
+  cartOpen: boolean;
   toast: string | null;
   openReserve: () => void;
+  openCart: () => void;
+  closeCart: () => void;
   closeReserve: () => void;
   showToast: (message: string) => void;
   clearToast: () => void;
@@ -95,9 +169,12 @@ type UIState = {
 
 export const useUI = create<UIState>((set) => ({
   reserveOpen: false,
+  cartOpen: false,
   toast: null,
   openReserve: () => set({ reserveOpen: true }),
   closeReserve: () => set({ reserveOpen: false }),
+  openCart: () => set({ cartOpen: true }),
+  closeCart: () => set({ cartOpen: false }),
   showToast: (toast) => set({ toast }),
   clearToast: () => set({ toast: null }),
 }));

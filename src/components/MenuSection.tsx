@@ -20,9 +20,12 @@ const FILTERS: {
   { id: "gluten-free", labelKey: "filter.glutenFree", icon: WheatOff },
 ];
 
-type MenuSectionProps = { onOpenDish: (dish: Dish) => void };
+type MenuSectionProps = {
+  onOpenDish: (dish: Dish) => void;
+  orderable?: boolean;
+};
 
-export default function MenuSection({ onOpenDish }: MenuSectionProps) {
+export default function MenuSection({ onOpenDish, orderable = false }: MenuSectionProps) {
   const { t, locale } = useI18n();
   const allDishes = useDishes();
   const [category, setCategory] = useState<CategoryId | "all">("all");
@@ -179,6 +182,7 @@ export default function MenuSection({ onOpenDish }: MenuSectionProps) {
                   price={priceFor(dish, priceOverrides)}
                   available={availableFor(dish, availabilityOverrides)}
                   onOpen={onOpenDish}
+                  orderable={orderable}
                 />
               ))}
             </AnimatePresence>

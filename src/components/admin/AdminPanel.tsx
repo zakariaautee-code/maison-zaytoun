@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import { CLIENT_CONFIG } from "@/config/client";
 import { SITE_ORIGIN, TABLE_NUMBERS } from "@/lib/constants";
 import { useI18n, type TranslationKey } from "@/lib/i18n";
 import { CATEGORIES, MENU } from "@/lib/menu-data";
@@ -35,18 +36,29 @@ export default function AdminPanel() {
   const [origin, setOrigin] = useState(SITE_ORIGIN);
   const [copied, setCopied] = useState(false);
   const qrRef = useRef<HTMLDivElement>(null);
+  const reviewQrRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (typeof window !== "undefined") setOrigin(window.location.origin);
   }, []);
 
   const qrValue = `${origin}/menu?table=${table}`;
+  const reviewQrValue = `${origin}/avis`;
 
   const downloadQr = () => {
     const canvas = qrRef.current?.querySelector("canvas");
     if (!canvas) return;
     const link = document.createElement("a");
     link.download = `maison-zaytoun-table-${table}.png`;
+    link.href = canvas.toDataURL("image/png");
+    link.click();
+  };
+
+  const downloadReviewQr = () => {
+    const canvas = reviewQrRef.current?.querySelector("canvas");
+    if (!canvas) return;
+    const link = document.createElement("a");
+    link.download = "maison-zaytoun-avis.png";
     link.href = canvas.toDataURL("image/png");
     link.click();
   };
@@ -303,45 +315,52 @@ export default function AdminPanel() {
               {/* Printable table card */}
               <div
                 ref={qrRef}
-                className="mx-auto mt-6 w-full max-w-[300px] border border-brass/40 bg-plaster p-3 text-espresso print:mt-0 print:max-w-[420px] print:border-black"
+                className="relative mx-auto mt-6 w-full max-w-[320px] bg-plaster p-3 text-espresso print:mt-0 print:max-w-[420px]"
               >
-                <div className="border border-espresso/20 p-5 text-center print:border-black">
+                <span className="absolute start-0 top-0 size-8 border-s-2 border-t-2 border-brass-deep" />
+                <span className="absolute end-0 top-0 size-8 border-e-2 border-t-2 border-brass-deep" />
+                <span className="absolute bottom-0 start-0 size-8 border-b-2 border-s-2 border-brass-deep" />
+                <span className="absolute bottom-0 end-0 size-8 border-b-2 border-e-2 border-brass-deep" />
+
+                <div className="border border-ink/15 px-6 py-7 text-center print:border-black">
                   <div className="flex items-center justify-center gap-2 text-brass-deep">
-                    <Leaf className="size-3.5" strokeWidth={1.8} />
-                    <span className="text-[8px] font-bold uppercase tracking-[0.28em]">
-                      {t("brand.name")}
+                    <Leaf className="size-4" strokeWidth={1.6} />
+                    <span className="font-display text-lg italic">
+                      {CLIENT_CONFIG.restaurantName}
                     </span>
                   </div>
-
-                  <p className="mt-3 font-arabic text-2xl leading-none text-espresso">
-                    {t("brand.arabic")}
+                  <p className="mt-1 text-[10px] tracking-[0.24em] text-espresso/45">
+                    {CLIENT_CONFIG.city} · {CLIENT_CONFIG.tagline}
                   </p>
 
-                  <div className="mx-auto mt-4 h-px w-10 bg-brass/60" />
+                  <div className="mx-auto mt-5 h-px w-16 bg-brass-deep/60" />
 
-                  <p className="mt-4 text-[9px] font-semibold uppercase tracking-[0.24em] text-espresso/50">
+                  <p className="mt-4 text-[10px] tracking-[0.28em] text-espresso/50">
                     {t("admin.table")}
                   </p>
-                  <p className="font-display text-4xl leading-none text-espresso [font-variant-numeric:lining-nums_tabular-nums]">
+                  <p className="mt-1 font-display text-6xl leading-none tabular-nums text-espresso [font-variant-numeric:lining-nums_tabular-nums]">
                     {String(table).padStart(2, "0")}
                   </p>
 
-                  <div className="mx-auto mt-4 flex w-fit items-center justify-center bg-white p-2">
+                  <div className="mx-auto mt-6 w-fit border border-brass-deep/40 bg-white p-3">
                     <QRCodeCanvas
                       value={qrValue}
                       size={200}
                       level="H"
                       fgColor="#121A15"
                       bgColor="#FFFFFF"
-                      className="h-[168px] w-[168px] sm:h-[180px] sm:w-[180px] print:h-[200px] print:w-[200px]"
+                      className="size-[168px] print:size-[200px]"
                     />
                   </div>
 
-                  <p className="mt-4 text-[10px] leading-snug text-espresso/60">
+                  <p className="mt-5 font-display text-xl text-espresso">
                     {t("admin.qrCardHint")}
                   </p>
-                  <div className="mt-1 flex items-center justify-center gap-1 text-[9px] text-espresso/40">
-                    <Star className="size-2.5 fill-current text-brass" />
+                  <p className="mt-1 text-[10px] tracking-[0.14em] text-espresso/45">
+                    {t("cart.checkoutHint")}
+                  </p>
+                  <div className="mt-4 flex items-center justify-center gap-1.5 text-[10px] text-espresso/40">
+                    <Star className="size-3 fill-brass-deep text-brass-deep" />
                     {t("footer.reviewLine")}
                   </div>
                 </div>
@@ -410,6 +429,73 @@ export default function AdminPanel() {
                 <p className="mt-2.5 text-[10px] leading-relaxed text-plaster/30">
                   {t("admin.qrPrintHint")}
                 </p>
+              </div>
+            </section>
+
+            {/* ── Review QR ─────────────────────────────────────────────── */}
+            <section className="border border-brass/20 bg-coal/80 p-5 sm:p-6 print:border-0 print:bg-white print:p-0">
+              <div className="print:hidden">
+                <h2 className="font-display text-2xl text-plaster">
+                  {t("admin.reviewQrTitle")}
+                </h2>
+                <p className="mt-2 text-xs leading-relaxed text-plaster/45">
+                  {t("admin.reviewQrHint")}
+                </p>
+              </div>
+
+              <div
+                ref={reviewQrRef}
+                className="relative mx-auto mt-6 w-full max-w-[320px] bg-plaster p-3 text-espresso print:mt-0 print:max-w-[420px]"
+              >
+                <span className="absolute start-0 top-0 size-8 border-s-2 border-t-2 border-brass-deep" />
+                <span className="absolute end-0 top-0 size-8 border-e-2 border-t-2 border-brass-deep" />
+                <span className="absolute bottom-0 start-0 size-8 border-b-2 border-s-2 border-brass-deep" />
+                <span className="absolute bottom-0 end-0 size-8 border-b-2 border-e-2 border-brass-deep" />
+                <div className="border border-ink/15 px-6 py-7 text-center print:border-black">
+                  <div className="flex items-center justify-center gap-1.5 text-brass-deep">
+                    {[1, 2, 3, 4, 5].map((n) => (
+                      <Star key={n} className="size-4 fill-current" strokeWidth={1.4} />
+                    ))}
+                  </div>
+                  <p className="mt-4 font-display text-3xl leading-tight text-espresso">
+                    {t("admin.reviewQrCta")}
+                  </p>
+                  <p className="mt-2 text-[11px] tracking-[0.14em] text-espresso/50">
+                    {CLIENT_CONFIG.restaurantName}
+                  </p>
+                  <div className="mx-auto mt-5 h-px w-16 bg-brass-deep/60" />
+                  <div className="mx-auto mt-5 w-fit border border-brass-deep/40 bg-white p-3">
+                    <QRCodeCanvas
+                      value={reviewQrValue}
+                      size={200}
+                      level="H"
+                      fgColor="#121A15"
+                      bgColor="#FFFFFF"
+                      className="size-[168px] print:size-[200px]"
+                    />
+                  </div>
+                  <p className="mt-5 text-[10px] tracking-[0.14em] text-espresso/45">
+                    {t("footer.reviewCount")}
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-5 grid grid-cols-2 gap-2 print:hidden">
+                <button
+                  type="button"
+                  onClick={downloadReviewQr}
+                  className="inline-flex items-center justify-center gap-1.5 bg-brass px-3 py-2.5 text-[11px] text-espresso transition hover:bg-brass-light"
+                >
+                  <Download className="size-3.5" />
+                  {t("admin.download")}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => window.open(reviewQrValue, "_blank", "noopener,noreferrer")}
+                  className="inline-flex items-center justify-center gap-1.5 border border-brass/30 px-3 py-2.5 text-[11px] text-plaster transition hover:border-brass"
+                >
+                  {t("admin.testQr")}
+                </button>
               </div>
             </section>
 
