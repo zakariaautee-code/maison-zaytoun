@@ -8,8 +8,7 @@ import { HERO_IMAGE } from "@/lib/constants";
 import { useDishes } from "@/lib/dishes-context";
 import { useI18n } from "@/lib/i18n";
 import { CATEGORIES } from "@/lib/menu-data";
-import { priceFor, useAdmin } from "@/lib/store";
-import { useUI } from "@/lib/store";
+import { priceFor, useAdmin, useUI } from "@/lib/store";
 import type { CategoryId, Dish } from "@/lib/types";
 
 const W = 1240;
@@ -29,72 +28,6 @@ function short(value: string, max: number): string {
   return value.slice(0, max - 1).trimEnd() + "…";
 }
 
-type CardDishes = Dish[];
-
-function cardSvg(
-  dishes: CardDishes,
-  categoryLabel: string,
-  locale: "fr" | "ar" | "en",
-  imageUrls: string[] = []
-): string {
-  const rtl = locale === "ar";
-  const photos = [
-    dishes[0]?.image || HERO_IMAGE,
-    dishes[1]?.image || dishes[0]?.image || HERO_IMAGE,
-    dishes[2]?.image || dishes[0]?.image || HERO_IMAGE,
-  ].map((url, i) => imageUrls[i] || url);
-
-  const listRight = rtl ? W - 100 : 660;
-  const listLeft = rtl ? 100 : 660;
-  const nameX = rtl ? W - 100 : 100;
-  const priceX = rtl ? 660 : W - 100;
-  const nameAnchor = rtl ? "end" : "start";
-  const priceAnchor = rtl ? "start" : "end";
-  const photoCx = rtl ? 360 : 880;
-
-  const rows = dishes
-    .slice(0, 7)
-    .map((dish, i) => {
-      const y = 400 + i * 158;
-      return `
-        <text x="${nameX}" y="${y}" text-anchor="${nameAnchor}" font-family="Cormorant Garamond, Georgia, serif" font-size="36" fill="#F4EBDD">${esc(dish.name[locale])}</text>
-        <text x="${priceX}" y="${y}" text-anchor="${priceAnchor}" font-family="Cormorant Garamond, Georgia, serif" font-size="30" fill="#C9A253">${dish.price} MAD</text>
-        <text x="${nameX}" y="${y + 34}" text-anchor="${nameAnchor}" font-family="Plus Jakarta Sans, sans-serif" font-size="20" fill="#B9C7B8">${esc(short(dish.description[locale], 58))}</text>
-        <line x1="${listLeft}" y1="${y + 58}" x2="${listRight}" y2="${y + 58}" stroke="#C9A253" stroke-opacity="0.28" stroke-width="1" />`;
-    })
-    .join("");
-
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
-    <defs>
-      <clipPath id="mainPhoto"><circle cx="${photoCx}" cy="540" r="212" /></clipPath>
-      <clipPath id="smallPhotoA"><circle cx="${photoCx - 130}" cy="900" r="66" /></clipPath>
-      <clipPath id="smallPhotoB"><circle cx="${photoCx + 150}" cy="940" r="54" /></clipPath>
-    </defs>
-    <rect width="${W}" height="${H}" fill="#121A15" />
-    <circle cx="${rtl ? 1080 : 160}" cy="${rtl ? 110 : 1650}" r="420" fill="#1B261F" opacity="0.55" />
-    <rect x="46" y="46" width="${W - 92}" height="${H - 92}" fill="none" stroke="#C9A253" stroke-opacity="0.7" stroke-width="2" />
-    <rect x="62" y="62" width="${W - 124}" height="${H - 124}" fill="none" stroke="#C9A253" stroke-opacity="0.25" stroke-width="1" />
-
-    <text x="100" y="130" font-family="Plus Jakarta Sans, sans-serif" font-size="20" fill="#C9A253">${esc(CLIENT_CONFIG.restaurantName)}</text>
-    <text x="100" y="225" font-family="Cormorant Garamond, Georgia, serif" font-style="italic" font-size="96" fill="#F4EBDD">Menu</text>
-    <text x="100" y="275" font-family="Plus Jakarta Sans, sans-serif" font-size="19" fill="#C9A253">${esc(categoryLabel)}</text>
-    <line x1="100" y1="310" x2="1140" y2="310" stroke="#C9A253" stroke-width="2" />
-
-    <image href="${esc(photos[0])}" x="${photoCx - 212}" y="328" width="424" height="424" preserveAspectRatio="xMidYMid slice" clip-path="url(#mainPhoto)" />
-    <circle cx="${photoCx}" cy="540" r="212" fill="none" stroke="#C9A253" stroke-width="4" />
-    <image href="${esc(photos[1])}" x="${photoCx - 196}" y="834" width="132" height="132" preserveAspectRatio="xMidYMid slice" clip-path="url(#smallPhotoA)" />
-    <circle cx="${photoCx - 130}" cy="900" r="66" fill="none" stroke="#C9A253" stroke-width="3" />
-    <image href="${esc(photos[2])}" x="${photoCx + 96}" y="886" width="108" height="108" preserveAspectRatio="xMidYMid slice" clip-path="url(#smallPhotoB)" />
-    <circle cx="${photoCx + 150}" cy="940" r="54" fill="none" stroke="#C9A253" stroke-width="3" />
-
-    ${rows}
-
-    <line x1="100" y1="${H - 130}" x2="1140" y2="${H - 130}" stroke="#C9A253" stroke-width="2" />
-    <text x="100" y="${H - 82}" font-family="Plus Jakarta Sans, sans-serif" font-size="16" fill="#9AAE9F">${esc(CLIENT_CONFIG.city)} · ${esc(CLIENT_CONFIG.tagline)}</text>
-    <text x="1140" y="${H - 82}" text-anchor="end" font-family="Plus Jakarta Sans, sans-serif" font-size="16" fill="#C9A253">Prix en MAD</text>
-  </svg>`;
-}
-
 async function imageToDataUrl(url: string): Promise<string> {
   try {
     const response = await fetch(url, { mode: "cors" });
@@ -108,6 +41,69 @@ async function imageToDataUrl(url: string): Promise<string> {
   } catch {
     return url;
   }
+}
+
+function cardSvg(
+  dishes: Dish[],
+  categoryLabel: string,
+  locale: "fr" | "ar" | "en",
+  photos: string[] = []
+): string {
+  const rtl = locale === "ar";
+  const hero = photos[0] || dishes[0]?.image || HERO_IMAGE;
+  const rowHeight = dishes.length > 4 ? 172 : 222;
+  const textX = rtl ? W - 300 : 300;
+  const priceX = rtl ? 250 : W - 110;
+  const textAnchor = rtl ? "end" : "start";
+  const priceAnchor = rtl ? "start" : "end";
+  const thumbX = rtl ? W - 230 : 110;
+
+  const defs = dishes
+    .slice(0, 7)
+    .map(
+      (_, i) =>
+        `<clipPath id="thumb${i}"><rect x="${thumbX}" y="${590 + i * rowHeight - 55}" width="140" height="140" /></clipPath>`
+    )
+    .join("");
+
+  const rows = dishes
+    .slice(0, 7)
+    .map((dish, i) => {
+      const y = 590 + i * rowHeight;
+      const photo = photos[i] || dish.image;
+      return `
+        <g>
+          <image href="${esc(photo)}" x="${thumbX}" y="${y - 55}" width="140" height="140" preserveAspectRatio="xMidYMid slice" clip-path="url(#thumb${i})" />
+          <rect x="${thumbX}" y="${y - 55}" width="140" height="140" fill="none" stroke="#C9A253" stroke-width="3" />
+          <text x="${textX}" y="${y - 8}" text-anchor="${textAnchor}" font-family="Cormorant Garamond, Georgia, serif" font-size="40" fill="#F4EBDD">${esc(dish.name[locale])}</text>
+          <text x="${textX}" y="${y + 32}" text-anchor="${textAnchor}" font-family="Plus Jakarta Sans, sans-serif" font-size="20" fill="#B9C7B8">${esc(short(dish.description[locale], 64))}</text>
+          <text x="${priceX}" y="${y + 4}" text-anchor="${priceAnchor}" font-family="Cormorant Garamond, Georgia, serif" font-size="34" fill="#C9A253">${dish.price} MAD</text>
+          <line x1="110" y1="${y + 78}" x2="1130" y2="${y + 78}" stroke="#C9A253" stroke-opacity="0.28" stroke-width="1" />
+        </g>`;
+    })
+    .join("");
+
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
+    <defs>
+      ${defs}
+      <clipPath id="heroClip"><rect x="70" y="70" width="1100" height="420" /></clipPath>
+    </defs>
+    <rect width="${W}" height="${H}" fill="#121A15" />
+    <rect x="40" y="40" width="1160" height="1674" fill="none" stroke="#C9A253" stroke-width="3" />
+    <rect x="54" y="54" width="1132" height="1646" fill="none" stroke="#C9A253" stroke-opacity="0.3" stroke-width="1" />
+
+    <image href="${esc(hero)}" x="70" y="70" width="1100" height="420" preserveAspectRatio="xMidYMid slice" clip-path="url(#heroClip)" />
+    <rect x="70" y="70" width="1100" height="420" fill="#121A15" fill-opacity="0.62" />
+    <text x="105" y="185" font-family="Plus Jakarta Sans, sans-serif" font-size="20" fill="#C9A253">${esc(CLIENT_CONFIG.restaurantName)}</text>
+    <text x="105" y="300" font-family="Cormorant Garamond, Georgia, serif" font-style="italic" font-size="104" fill="#F4EBDD">Menu</text>
+    <text x="105" y="365" font-family="Plus Jakarta Sans, sans-serif" font-size="24" fill="#E0C281">${esc(categoryLabel)}</text>
+
+    <line x1="70" y1="530" x2="1170" y2="530" stroke="#C9A253" stroke-width="2" />
+    ${rows}
+    <line x1="70" y1="${H - 125}" x2="1170" y2="${H - 125}" stroke="#C9A253" stroke-width="2" />
+    <text x="80" y="${H - 75}" font-family="Plus Jakarta Sans, sans-serif" font-size="17" fill="#9AAE9F">${esc(CLIENT_CONFIG.city)} · ${esc(CLIENT_CONFIG.tagline)}</text>
+    <text x="1160" y="${H - 75}" text-anchor="end" font-family="Plus Jakarta Sans, sans-serif" font-size="17" fill="#C9A253">Prix en MAD</text>
+  </svg>`;
 }
 
 export default function MenuCardPrinter() {
@@ -143,10 +139,11 @@ export default function MenuCardPrinter() {
     URL.revokeObjectURL(url);
   };
 
+  const photosFor = async (list: Dish[]) =>
+    Promise.all(list.slice(0, 7).map((dish) => imageToDataUrl(dish.image)));
+
   const downloadPng = async () => {
-    const photos = await Promise.all(
-      dishes.slice(0, 3).map((dish) => imageToDataUrl(dish.image))
-    );
+    const photos = await photosFor(dishes);
     const finalSvg = cardSvg(dishes, activeLabel, locale, photos);
     const blob = new Blob([finalSvg], { type: "image/svg+xml;charset=utf-8" });
     const objectUrl = URL.createObjectURL(blob);
@@ -190,7 +187,7 @@ export default function MenuCardPrinter() {
           .filter((dish) => dish.category === c.id && dish.available)
           .map((dish) => ({ ...dish, price: priceFor(dish, priceOverrides) }));
         const photos = await Promise.all(
-          list.slice(0, 3).map(async (dish) => {
+          list.slice(0, 7).map(async (dish) => {
             if (!cache.has(dish.image)) cache.set(dish.image, await imageToDataUrl(dish.image));
             return cache.get(dish.image)!;
           })
@@ -278,7 +275,7 @@ export default function MenuCardPrinter() {
       </div>
 
       <div
-        className="menu-card-preview mx-auto mt-6 w-full max-w-[300px] border border-brass/30 bg-white"
+        className="menu-card-preview mx-auto mt-6 w-full max-w-[320px] border border-brass/30 bg-white"
         dangerouslySetInnerHTML={{ __html: svg }}
       />
     </section>
