@@ -3,6 +3,7 @@
 import { CalendarDays, Check, MessageCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import Sheet from "./ui/Sheet";
+import { clarityEvent } from "@/lib/clarity";
 import { OCCASIONS, SEATING_OPTIONS, TIME_SLOTS } from "@/lib/constants";
 import { useI18n } from "@/lib/i18n";
 import { useUI } from "@/lib/store";
@@ -47,6 +48,7 @@ export default function ReservationModal({ open, onClose }: ReservationModalProp
       return;
     }
     const message = buildReservationMessage({ t, locale, reservation: form });
+    clarityEvent("reserve_click");
     window.open(reservationWaUrl(message), "_blank", "noopener,noreferrer");
     showToast(t("reserve.note"));
   };

@@ -13,6 +13,7 @@ import {
   Phone,
 } from "lucide-react";
 import { useState } from "react";
+import { clarityEvent } from "@/lib/clarity";
 import { CALL_URL, CONTACT_EMAIL, GOOGLE_MAPS_URL, PHOTOS } from "@/lib/constants";
 import { useI18n, type TranslationKey } from "@/lib/i18n";
 
@@ -401,7 +402,10 @@ export function BookingSection({ onReserve }: { onReserve: () => void }) {
 
           <button
             type="button"
-            onClick={onReserve}
+            onClick={() => {
+              clarityEvent("book_now_click");
+              onReserve();
+            }}
             className="mt-10 inline-flex w-fit items-center gap-3 bg-saffron px-8 py-4 text-[10px] font-extrabold uppercase tracking-[0.18em] text-white transition hover:bg-espresso hover:text-plaster"
           >
             <CalendarDays className="size-[18px]" />

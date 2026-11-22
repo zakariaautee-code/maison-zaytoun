@@ -4,6 +4,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowDown, ArrowUpRight, CalendarDays, Check } from "lucide-react";
 import { CLIENT_CONFIG } from "@/config/client";
+import { clarityEvent } from "@/lib/clarity";
 import { HERO_IMAGE, GOOGLE_REVIEW_URL } from "@/lib/constants";
 import { useI18n } from "@/lib/i18n";
 import { useUI } from "@/lib/store";
@@ -68,7 +69,10 @@ export default function Hero() {
             </Link>
             <button
               type="button"
-              onClick={openReserve}
+              onClick={() => {
+                clarityEvent("book_now_click");
+                openReserve();
+              }}
               className="inline-flex items-center justify-center gap-2 border border-brass/60 px-6 py-3.5 text-[12px] font-medium text-plaster transition-colors hover:bg-brass hover:text-espresso"
             >
               <CalendarDays className="size-4" strokeWidth={1.5} />

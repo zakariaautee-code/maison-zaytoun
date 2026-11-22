@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import ClarityScript from "@/components/ClarityScript";
 import Providers from "@/components/Providers";
 import { getDishes } from "@/lib/sanity";
 
@@ -34,6 +35,7 @@ export default async function RootLayout({
   return (
     <html lang="fr" dir="ltr" suppressHydrationWarning>
       <body className="min-h-screen bg-plaster text-espresso antialiased">
+        <ClarityScript />
         <Providers dishes={dishes}>{children}</Providers>
       </body>
     </html>

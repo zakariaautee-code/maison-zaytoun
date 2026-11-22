@@ -2,6 +2,7 @@
 
 import { MessageCircle, Minus, Plus, Trash2 } from "lucide-react";
 import Sheet from "./ui/Sheet";
+import { clarityEvent } from "@/lib/clarity";
 import { useI18n } from "@/lib/i18n";
 import { useAdmin, useCart, useUI } from "@/lib/store";
 import { buildOrderMessage, orderWaUrl } from "@/lib/whatsapp";
@@ -27,6 +28,7 @@ export default function CartDrawer() {
       tableNumber,
       total,
     });
+    clarityEvent("order_click");
     window.open(orderWaUrl(message), "_blank", "noopener,noreferrer");
     showToast(t("cart.checkoutHint"));
   };

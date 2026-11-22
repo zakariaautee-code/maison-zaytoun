@@ -7,13 +7,20 @@ import {
   GOOGLE_REVIEW_URL,
   WHATSAPP_NUMBER,
 } from "@/lib/constants";
+import { clarityEvent, type ClarityEventName } from "@/lib/clarity";
 import { useI18n } from "@/lib/i18n";
 import { buildWaUrl } from "@/lib/whatsapp";
 
 export default function FloatingActions() {
   const { t } = useI18n();
 
-  const actions = [
+  const actions: {
+    label: string;
+    icon: typeof MapPin;
+    href: string;
+    className: string;
+    event?: ClarityEventName;
+  }[] = [
     {
       label: t("float.directions"),
       icon: MapPin,
@@ -31,12 +38,14 @@ export default function FloatingActions() {
       icon: MessageCircle,
       href: buildWaUrl(WHATSAPP_NUMBER, `${t("reserve.receiptTitle")} — ${t("brand.name")}`),
       className: "border-saffron bg-saffron text-white hover:bg-saffron-dark",
+      event: "whatsapp_click",
     },
     {
       label: t("quick.call"),
       icon: Phone,
       href: CALL_URL,
       className: "border-brass/40 text-brass-light hover:bg-brass/10",
+      event: "phone_call_click",
     },
   ];
 
@@ -52,6 +61,7 @@ export default function FloatingActions() {
             target={action.href.startsWith("http") ? "_blank" : undefined}
             rel="noreferrer"
             aria-label={action.label}
+            onClick={() => action.event && clarityEvent(action.event)}
             className={`group relative place-items-center border bg-espresso/85 transition-colors ${
               primary ? "grid" : "hidden sm:grid"
             } size-10 sm:size-11 ${action.className}`}
